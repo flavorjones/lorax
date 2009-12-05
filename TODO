@@ -1,0 +1,10 @@
+-*-org-*-
+
+* license
+* hoe params
+* readme
+* rdocs
+* gemcutter
+* algorithmic notes
+  - ignoring ID because too many web sites fuck that up, and nokogiri allows it
+* build an rspec differ for xml
