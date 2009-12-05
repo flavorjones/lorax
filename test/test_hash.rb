@@ -21,6 +21,12 @@ module Diffaroo
         should "raise an error if passed a non-Node" do
           assert_raises(ArgumentError) { Diffaroo::Hash.node_hash(nil) }
         end
+
+        should "raise an error if passed a non-text, non-element" do
+          doc = xml { root { a1("foo" => "bar") } }
+          attr = doc.at_css("a1").attributes.first.last
+          assert_raises(ArgumentError) { Diffaroo::Hash.node_hash(attr) }
+        end
       end
     end
 
