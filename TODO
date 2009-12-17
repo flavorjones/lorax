@@ -1,10 +1,16 @@
 -*-org-*-
 
-* license
 * hoe params
-* readme
+* license
 * rdocs
+* readme
 * gemcutter
+* pick a hashing algorithm
+  - ruby hash / md5 / sha1
+  - benchmark? collision rate?
 * algorithmic notes
-  - ignoring ID because too many web sites fuck that up, and nokogiri allows it
+*** ignoring ID
+    - too many web sites fuck that up
+    - libxml2 allows duplicate ids
+    - algorithm would ignore changed content (I think?)
 * build an rspec differ for xml
