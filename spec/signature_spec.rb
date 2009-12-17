@@ -1,40 +1,71 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe Diffaroo::Hash do
+describe Diffaroo::Signature do
   def assert_node_hash_equal(node1, node2)
-    Diffaroo::Hash.node_hash(node1).should == Diffaroo::Hash.node_hash(node2)
+    Diffaroo::Signature.new(node1).hash.should == Diffaroo::Signature.new(node2).hash
   end
 
   def assert_node_hash_not_equal(node1, node2)
-    Diffaroo::Hash.node_hash(node1).should_not == Diffaroo::Hash.node_hash(node2)
+    Diffaroo::Signature.new(node1).hash.should_not == Diffaroo::Signature.new(node2).hash
   end
 
-  describe ".node_hash" do
-    context "API" do
-      it "raises an error if passed a non-Node" do
-        proc { Diffaroo::Hash.node_hash(nil) }.should raise_error(ArgumentError)
+  describe "API" do
+    describe ".new" do
+      it "accepts nil" do
+        proc { Diffaroo::Signature.new }.should_not raise_error
       end
 
-      it "raises an error if passed a non-text, non-element" do
-        doc = xml { root { a1("foo" => "bar") } }
-        attr = doc.at_css("a1").attributes.first.last
-        proc { Diffaroo::Hash.node_hash(attr) }.should raise_error(ArgumentError) 
+      it "does not call node_hash if param is nil" do
+        mock.instance_of(Diffaroo::Signature).node_hash(42).never
       end
 
-      it "hashes each node only once" do
-        doc = xml { root {
-            a1 {
-              b1 {
-                c1 "hello"
-              }
-            }
-          } }
-        node = doc.at_css "c1"
-        mock.proxy(Diffaroo::Hash).node_hash(anything).times(5)
-        Diffaroo::Hash.node_hash(doc.root)
+      it "calls node_hash if a param is non-nil" do
+        mock.instance_of(Diffaroo::Signature).node_hash(42).once
+        Diffaroo::Signature.new(42)
       end
     end
 
+    describe "#node_hash" do
+      it "raises an error if passed a non-Node" do
+        proc { Diffaroo::Signature.new.node_hash(42) }.should raise_error(ArgumentError)
+      end
+
+      it "raises an error if passed a non-text, non-element Node" do
+        doc = xml { root { a1("foo" => "bar") } }
+        attr = doc.at_css("a1").attributes.first.last
+        proc { Diffaroo::Signature.new.node_hash(attr) }.should raise_error(ArgumentError) 
+      end
+
+      it "hashes each node only once" do
+        doc = xml { root { a1 { b1 { c1 "hello" } } } }
+        node = doc.at_css "c1"
+        mock.proxy.instance_of(Diffaroo::Signature).node_hash(anything).times(5)
+        Diffaroo::Signature.new.node_hash(doc.root)
+      end
+    end
+
+    it "has a node accessor" do
+      doc = xml { root "hello" }
+      sig = Diffaroo::Signature.new(doc.root)
+      sig.node.should == doc.at_css("root")
+    end
+
+    it "has a node hash accessor" do
+      doc = xml { root "hello" }
+      sig = Diffaroo::Signature.new(doc.root)
+      sig.hash.should == Diffaroo::Signature.new.node_hash(doc.at_css("root"))
+    end
+
+    it "has a hashes accessor" do
+      doc      = xml { root { a1 "hello" } }
+      node     = doc.at_css("a1")
+      doc_sig  = Diffaroo::Signature.new(doc.root)
+      node_sig = Diffaroo::Signature.new(node)
+      doc_sig.hashes[node].should == node_sig.hash
+    end
+  end
+
+  describe "#node_hash" do
     context "identical text nodes" do
       it "hashes equally" do
         doc = xml { root {
@@ -144,8 +175,8 @@ describe Diffaroo::Hash do
     context "attributes reverse-engineered to be similar" do
       it "hashes differently" do
         doc = xml { root {
-            a1("foo" => "bar#{Diffaroo::Hash::SEP}quux")
-            a1("foo#{Diffaroo::Hash::SEP}bar" => "quux")
+            a1("foo" => "bar#{Diffaroo::Signature::SEP}quux")
+            a1("foo#{Diffaroo::Signature::SEP}bar" => "quux")
           } }
         assert_node_hash_not_equal(*doc.css("a1"))
       end

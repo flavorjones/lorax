@@ -6,4 +6,4 @@ module Diffaroo
   raise LoadError, "diffaroo requires Nokogiri version #{REQUIRED_NOKOGIRI_VERSION} or higher" unless Nokogiri::VERSION >= REQUIRED_NOKOGIRI_VERSION
 end
 
-require 'diffaroo/hash'
+require 'diffaroo/signature'
