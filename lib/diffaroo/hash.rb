@@ -17,9 +17,5 @@ module Diffaroo
         raise ArgumentError, "node_hash expects a text node or element, but received #{node.type}"
       end
     end
-
-    def Hash.document_hash(doc)
-      node_hash(doc.root)
-    end
   end
 end

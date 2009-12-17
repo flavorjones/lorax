@@ -143,9 +143,7 @@ describe Diffaroo::Hash do
     context "HTML" do
       it "write some HTML tests"
     end
-  end
 
-  describe ".document_hash" do
     it "hashes each node only once" do
       doc = xml { root {
           a1 {
@@ -156,7 +154,7 @@ describe Diffaroo::Hash do
         } }
       node = doc.at_css "c1"
       mock.proxy(Diffaroo::Hash).node_hash(anything).times(5)
-      Diffaroo::Hash.document_hash(doc)
+      Diffaroo::Hash.node_hash(doc.root)
     end
   end
 end
