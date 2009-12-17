@@ -10,6 +10,13 @@ require 'rr'
 
 warn "#{__FILE__}:#{__LINE__}: libxml version info: #{Nokogiri::VERSION_INFO.inspect}"
 
+module XmlBuilderHelper
+  def xml(&block)
+    Nokogiri::XML::Builder.new(&block).doc
+  end
+end
+
 Spec::Runner.configure do |config|
   config.mock_with :rr
+  config.include XmlBuilderHelper
 end

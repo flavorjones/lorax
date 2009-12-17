@@ -1,10 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe Diffaroo::Hash do
-  def xml(&block)
-    Nokogiri::XML::Builder.new(&block).doc
-  end
-
   def assert_node_hash_equal(node1, node2)
     Diffaroo::Hash.node_hash(node1).should == Diffaroo::Hash.node_hash(node2)
   end
