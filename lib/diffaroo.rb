@@ -7,3 +7,4 @@ module Diffaroo
 end
 
 require 'diffaroo/signature'
+require 'diffaroo/matcher'

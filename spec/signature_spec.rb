@@ -241,7 +241,7 @@ describe Diffaroo::Signature do
     end
 
     context "HTML" do
-      it "write some case-insensitive HTML tests"
+      it "(write some case-insensitive HTML specs)"
     end
   end
 
