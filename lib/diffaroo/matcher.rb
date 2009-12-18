@@ -22,7 +22,11 @@ module Diffaroo
       hash  = @signature1.hashes[node1] # assumes node1 is in document1
       node2 = @signature2.nodes[hash]
       if node2
-        @matches << [node1, node2]
+        if node1.parent.name == node2.parent.name && ! node1.parent.is_a?(Nokogiri::XML::Document)
+          @matches << [node1.parent, node2.parent]
+        else
+          @matches << [node1, node2]
+        end
       else
         node1.children.each { |child| match_recursively child }
       end

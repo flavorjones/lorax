@@ -9,11 +9,11 @@ describe Diffaroo::Matcher do
     describe "basic node matching" do
       context "simple matches" do
         before do
-          @doc1 = xml { root {
+          @doc1 = xml { root1 {
               a1("foo" => "bar") { text "snazzy" }
               b1 "123"
             } }
-          @doc2 = xml { root {
+          @doc2 = xml { root2 {
               a1("foo" => "bar") { text "snazzy" }
               b2 "789"
             } }
@@ -52,12 +52,19 @@ describe Diffaroo::Matcher do
 
     describe "forced parent matching" do
       context "parents are named the same but are not identical" do
-        it "forces a match when parent attributes are different"
-        it "forces a match when siblings are different"
-      end
+        it "forces a match when parent attributes are different" do
+          doc1 = xml { root { a1(:foo => "bar")   { b1 } } }
+          doc2 = xml { root { a1(:bazz => "quux") { b1 } } }
+          matcher = Diffaroo::Matcher.new(doc1, doc2)
+          matcher.matches.should include([doc1.at_css("a1"), doc2.at_css("a1")])
+        end
 
-      context "single child of a parent" do
-        it "always forces a match"
+        it "forces a match when siblings are different" do
+          doc1 = xml { root { a1 { b1 "hello" ; b2 } } }
+          doc2 = xml { root { a1 { b1 "hello" ; b3 } } }
+          matcher = Diffaroo::Matcher.new(doc1, doc2)
+          matcher.matches.should include([doc1.at_css("a1"), doc2.at_css("a1")])
+        end
       end
 
       context "large subtree match" do
