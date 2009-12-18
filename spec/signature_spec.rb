@@ -42,6 +42,49 @@ describe Diffaroo::Signature do
         mock.proxy.instance_of(Diffaroo::Signature).node_hash(anything).times(5)
         Diffaroo::Signature.new.node_hash(doc.root)
       end
+
+      it "caches hashes" do
+        doc = xml { root { a1 { b1 { c1 "hello" } } } }
+        node = doc.at_css "c1"
+        mock.proxy.instance_of(Diffaroo::Signature).node_hash(anything).times(6)
+        sig = Diffaroo::Signature.new
+        sig.node_hash(doc.root)
+        sig.node_hash(doc.root)
+      end
+
+      it "calls node_weight" do
+        doc = xml { root }
+        mock.instance_of(Diffaroo::Signature).node_weight(doc.root).once
+        Diffaroo::Signature.new.node_hash(doc.root)
+      end
+    end
+
+    describe "#node_weight" do
+      it "raises an error if passed a non-Node" do
+        proc { Diffaroo::Signature.new.node_weight(42) }.should raise_error(ArgumentError)
+      end
+
+      it "raises an error if passed a non-text, non-element Node" do
+        doc = xml { root { a1("foo" => "bar") } }
+        attr = doc.at_css("a1").attributes.first.last
+        proc { Diffaroo::Signature.new.node_weight(attr) }.should raise_error(ArgumentError) 
+      end
+
+      it "weighs each node only once" do
+        doc = xml { root { a1 { b1 { c1 "hello" } } } }
+        node = doc.at_css "c1"
+        mock.proxy.instance_of(Diffaroo::Signature).node_weight(anything).times(5)
+        Diffaroo::Signature.new.node_weight(doc.root)
+      end
+
+      it "caches weights" do
+        doc = xml { root { a1 { b1 { c1 "hello" } } } }
+        node = doc.at_css "c1"
+        mock.proxy.instance_of(Diffaroo::Signature).node_weight(anything).times(6)
+        sig = Diffaroo::Signature.new
+        sig.node_weight(doc.root)
+        sig.node_weight(doc.root)
+      end
     end
 
     it "has a node accessor" do
@@ -53,7 +96,7 @@ describe Diffaroo::Signature do
     it "has a node hash accessor" do
       doc = xml { root "hello" }
       sig = Diffaroo::Signature.new(doc.root)
-      sig.hash.should == Diffaroo::Signature.new.node_hash(doc.at_css("root"))
+      sig.hash.should_not be_nil
     end
 
     it "has a hashes accessor" do
@@ -62,6 +105,21 @@ describe Diffaroo::Signature do
       doc_sig  = Diffaroo::Signature.new(doc.root)
       node_sig = Diffaroo::Signature.new(node)
       doc_sig.hashes[node].should == node_sig.hash
+    end
+
+    it "has a nodes accessor" do
+      doc      = xml { root { a1 "hello" } }
+      node     = doc.at_css("a1")
+      doc_sig  = Diffaroo::Signature.new(doc.root)
+      node_sig = Diffaroo::Signature.new(node)
+      doc_sig.nodes[node_sig.hash].should == node
+    end
+
+    it "has a weights accessor" do
+      doc      = xml { root { a1 "hello" } }
+      node     = doc.at_css("a1")
+      doc_sig  = Diffaroo::Signature.new(doc.root)
+      doc_sig.weights.should be_instance_of(Hash)
     end
   end
 
@@ -184,6 +242,38 @@ describe Diffaroo::Signature do
 
     context "HTML" do
       it "write some case-insensitive HTML tests"
+    end
+  end
+
+  describe "#node_weight" do
+    it "weighs empty nodes with no children as 1" do
+      doc = xml { root { a1 } }
+      sig = Diffaroo::Signature.new(doc.root)
+      sig.weights[doc.at_css("a1")].should == 1
+    end
+
+    it "weighs nodes with children as 1 + sum(weight(children))" do
+      doc = xml { root {
+          a1 { b1 ; b2 }
+          a2 { b1 ; b2 ; b3 ; b4 }
+        } }
+      sig = Diffaroo::Signature.new(doc.root)
+      sig.weights[doc.at_css("a1")].should == 3
+      sig.weights[doc.at_css("a2")].should == 5
+    end
+
+    describe "text nodes" do
+      it "scores as 1 + log(length)" do
+        doc = xml { root {
+            a1 "x"
+            a2("x" * 500)
+            a3("x" * 50_000)
+          } }
+        sig = Diffaroo::Signature.new(doc.root)
+        sig.weights[doc.at_css("a1")].should be_close(2, 0.0005)
+        sig.weights[doc.at_css("a2")].should be_close(2 + Math.log(500), 0.0005)
+        sig.weights[doc.at_css("a3")].should be_close(2 + Math.log(50_000), 0.0005)
+      end
     end
   end
 end
