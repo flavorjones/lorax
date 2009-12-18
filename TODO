@@ -13,4 +13,5 @@
     - too many web sites fuck that up
     - libxml2 allows duplicate ids
     - algorithm would ignore changed content (I think?)
+*** indexes (ascendant lookahead) needs to be implemented?
 * build an rspec differ for xml

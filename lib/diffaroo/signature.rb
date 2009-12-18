@@ -20,11 +20,11 @@ module Diffaroo
 
       calculated_hash = \
         if node.text?
-          Digest::SHA1.hexdigest(node.content)
+          hashify node.content
         elsif node.element?
-          children_hash = Digest::SHA1.hexdigest node.children       .collect { |child| node_hash(child) }        .join(SEP)
-          attr_hash     = Digest::SHA1.hexdigest node.attributes.sort.collect { |k,v|   [k, v.value]     }.flatten.join(SEP)
-          Digest::SHA1.hexdigest [node.name, attr_hash, children_hash].join(SEP)
+          children_hash = hashify(node.children       .collect { |child| node_hash(child) })
+          attr_hash     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value]     }.flatten)
+          hashify(node.name, attr_hash, children_hash)
         else
           raise ArgumentError, "node_hash expects a text node or element, but received #{node.type}"
         end
@@ -49,6 +49,20 @@ module Diffaroo
         end
 
       @weights[node] = calculated_weight
+    end
+
+    private
+
+    def hashify(*args)
+      if args.length == 1
+        if args.first.is_a?(Array)
+          Digest::SHA1.hexdigest args.first.join(SEP)
+        else
+          Digest::SHA1.hexdigest args.first
+        end
+      else
+        Digest::SHA1.hexdigest args.join(SEP)
+      end
     end
   end
 end

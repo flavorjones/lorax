@@ -51,20 +51,18 @@ describe Diffaroo::Matcher do
     end
 
     describe "forced parent matching" do
-      context "parents are named the same but are not identical" do
-        it "forces a match when parent attributes are different" do
-          doc1 = xml { root { a1(:foo => "bar")   { b1 } } }
-          doc2 = xml { root { a1(:bazz => "quux") { b1 } } }
-          matcher = Diffaroo::Matcher.new(doc1, doc2)
-          matcher.matches.should include([doc1.at_css("a1"), doc2.at_css("a1")])
-        end
+      it "forces a match when parent names are the same but attributes are different" do
+        doc1 = xml { root { a1(:foo => "bar")   { b1 } } }
+        doc2 = xml { root { a1(:bazz => "quux") { b1 } } }
+        matcher = Diffaroo::Matcher.new(doc1, doc2)
+        matcher.matches.should include([doc1.at_css("a1"), doc2.at_css("a1")])
+      end
 
-        it "forces a match when siblings are different" do
-          doc1 = xml { root { a1 { b1 "hello" ; b2 } } }
-          doc2 = xml { root { a1 { b1 "hello" ; b3 } } }
-          matcher = Diffaroo::Matcher.new(doc1, doc2)
-          matcher.matches.should include([doc1.at_css("a1"), doc2.at_css("a1")])
-        end
+      it "forces a match when parent names and attributes are the same but siblings are different" do
+        doc1 = xml { root { a1(:foo => "bar") { b1 "hello" ; b2 } } }
+        doc2 = xml { root { a1(:foo => "bar") { b1 "hello" ; b3 } } }
+        matcher = Diffaroo::Matcher.new(doc1, doc2)
+        matcher.matches.should include([doc1.at_css("a1"), doc2.at_css("a1")])
       end
 
       context "large subtree match" do
