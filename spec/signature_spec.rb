@@ -121,6 +121,20 @@ describe Diffaroo::Signature do
       doc_sig  = Diffaroo::Signature.new(doc.root)
       doc_sig.weights.should be_instance_of(Hash)
     end
+
+    it "has a weight accessor" do
+      doc      = xml { root { a1 "hello" } }
+      node     = doc.at_css("a1")
+      doc_sig  = Diffaroo::Signature.new(doc.root)
+      doc_sig.weight.should == doc_sig.weights[doc.root]
+    end
+
+    it "has a size accessor" do
+      doc      = xml { root { a1 "hello" } }
+      node     = doc.at_css("a1")
+      doc_sig  = Diffaroo::Signature.new(doc.root)
+      doc_sig.size.should == 3 # root, a1, hello
+    end
   end
 
   describe "#node_hash" do

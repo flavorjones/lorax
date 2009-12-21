@@ -65,8 +65,47 @@ describe Diffaroo::Matcher do
         matcher.matches.should include([doc1.at_css("a1"), doc2.at_css("a1")])
       end
 
-      context "large subtree match" do
-        it "forces more parent matches"
+      it "should be unique" do
+        large_doc1 = xml { root { a1 { b1 { c1 { d1 { e1 {
+                      10.times { f1 "hello" }
+                      f2
+                    } } } } } } }
+        large_doc2 = xml { root { a1 { b1 { c1 { d1 { e1 {
+                      10.times { f1 "hello" }
+                      f3
+                    } } } } } } }
+        large_matcher = Diffaroo::Matcher.new(large_doc1, large_doc2)
+        large_matcher.matches.size.should == 1
+      end
+
+      it "large subtree matches force more parent matches" do
+        small_doc1 = xml { root { a1 { b1 { c1 { d1 { e1 {
+                      f1 "hello"
+                      f2
+                    } } } } } } }
+        small_doc2 = xml { root { a1 { b1 { c1 { d1 { e1 {
+                      f1 "hello"
+                      f3
+                    } } } } } } }
+        large_doc1 = xml { root { a1 { b1 { c1 { d1 { e1 {
+                      f1 { 10.times { g1 "hello" } }
+                      f2
+                    } } } } } } }
+        large_doc2 = xml { root { a1 { b1 { c1 { d1 { e1 {
+                      f1 { 10.times { g1 "hello" } }
+                      f3
+                    } } } } } } }
+
+        small_matcher = Diffaroo::Matcher.new(small_doc1, small_doc2)
+        large_matcher = Diffaroo::Matcher.new(large_doc1, large_doc2)
+
+        small_matcher.matches.should     include([small_doc1.at_css("e1"), small_doc2.at_css("e1")])
+        small_matcher.matches.should_not include([small_doc1.at_css("d1"), small_doc2.at_css("d1")])
+
+        large_matcher.matches.should_not include([large_doc1.at_css("e1"), large_doc2.at_css("e1")])
+        large_matcher.matches.should_not include([large_doc1.at_css("d1"), large_doc2.at_css("d1")])
+        large_matcher.matches.should     include([large_doc1.at_css("c1"), large_doc2.at_css("c1")])
+        large_matcher.matches.should_not include([large_doc1.at_css("b1"), large_doc2.at_css("b1")])
       end
     end
 
@@ -85,4 +124,3 @@ describe Diffaroo::Matcher do
     end
   end
 end
-

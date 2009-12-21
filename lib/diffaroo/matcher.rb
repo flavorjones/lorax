@@ -1,4 +1,3 @@
-
 module Diffaroo
   class Matcher
     attr_accessor :matches
@@ -22,18 +21,33 @@ module Diffaroo
       hash  = @signature1.hashes[node1] # assumes node1 is in document1
       node2 = @signature2.nodes[hash]
       if node2
-        if node1.parent.name == node2.parent.name && ! node1.parent.is_a?(Nokogiri::XML::Document)
-          mark_match node1.parent, node2.parent
+        if match_parents_recursively(node1, node2, match_depth(node2, @signature2))
+          true # matching a parent should abort recursing through children
         else
-          mark_match node1, node2
+          @matches << [node1, node2]
+          false
         end
       else
-        node1.children.each { |child| match_recursively child }
+        node1.children.each do |child|
+          break if match_recursively(child)
+        end
+        false
       end
     end
 
-    def mark_match(node1, node2)
-      @matches << [node1, node2]
+    def match_parents_recursively(node1, node2, depth)
+      if depth >= 1 && node1.parent.name == node2.parent.name && ! node1.parent.is_a?(Nokogiri::XML::Document)
+        unless match_parents_recursively(node1.parent, node2.parent, depth-1)
+          @matches << [node1.parent, node2.parent]
+        end
+        return true
+      end
+      return false
+    end
+
+    def match_depth(node, sig)
+      # puts "diffaroo: debug: #{__FILE__}:#{__LINE__}: depth #{d} = 1 + #{Math.log(sig.size)} * #{sig.weights[node]} / #{sig.weight}"
+      1 + Math.log(sig.size) * sig.weights[node] / sig.weight
     end
   end
 end

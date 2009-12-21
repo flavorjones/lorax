@@ -15,3 +15,4 @@
     - algorithm would ignore changed content (I think?)
 *** indexes (ascendant lookahead) needs to be implemented?
 * build an rspec differ for xml
+* Signature should have methods and not raw hash accessors

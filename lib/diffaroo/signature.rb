@@ -4,14 +4,16 @@ module Diffaroo
   class Signature
     SEP = "\0"
 
-    attr_accessor :node, :hash, :nodes, :hashes, :weights
+    attr_accessor :node, :hash, :nodes, :hashes, :weights, :weight, :size
 
     def initialize(node=nil)
       @hashes  = {} # node => hash
       @nodes   = {} # hash => node
       @weights = {} # node => weight
+      @size    = 0
       @node    = node
       @hash    = node ? node_hash(node) : nil
+      @weight  = @weights[node]
     end
 
     def node_hash(node)
@@ -29,6 +31,7 @@ module Diffaroo
           raise ArgumentError, "node_hash expects a text node or element, but received #{node.type}"
         end
 
+      @size += 1
       node_weight(node)
 
       @nodes[calculated_hash]  = node
