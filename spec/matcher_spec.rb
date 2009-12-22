@@ -36,13 +36,13 @@ describe Diffaroo::Matcher do
 
         it "matches identical nodes" do
           matcher = Diffaroo::Matcher.new(@doc1, @doc2)
-          matcher.matches.should include([@doc1.at_css("a1"), @doc2.at_css("a1")])
+          matcher.matches.collect{|m| m.pair}.should include([@doc1.at_css("a1"), @doc2.at_css("a1")])
         end
 
         it "does not match different nodes" do
           matcher = Diffaroo::Matcher.new(@doc1, @doc2)
-          matcher.matches.flatten.should_not include(@doc1.at_css("b1"))
-          matcher.matches.flatten.should_not include(@doc2.at_css("b2"))
+          matcher.matches.collect{|m| m.pair.first}.should_not include(@doc1.at_css("b1"))
+          matcher.matches.collect{|m| m.pair.last }.should_not include(@doc2.at_css("b2"))
         end
       end
 
@@ -54,13 +54,13 @@ describe Diffaroo::Matcher do
 
         it "matches the largest identical subtree" do
           matcher = Diffaroo::Matcher.new(@doc1, @doc2)
-          matcher.matches.should include([@doc1.at_css("root"), @doc2.at_css("root")])
+          matcher.matches.collect{|m| m.pair}.should include([@doc1.at_css("root"), @doc2.at_css("root")])
         end
 
         it "does not match small nodes within a larger matching subtree" do
           matcher = Diffaroo::Matcher.new(@doc1, @doc2)
-          matcher.matches.flatten.should_not include(@doc1.at_css("a1"))
-          matcher.matches.flatten.should_not include(@doc2.at_css("a1"))
+          matcher.matches.collect{|m| m.pair.first}.should_not include(@doc1.at_css("a1"))
+          matcher.matches.collect{|m| m.pair.last }.should_not include(@doc2.at_css("a1"))
         end
       end
     end
@@ -70,14 +70,14 @@ describe Diffaroo::Matcher do
         doc1 = xml { root { a1(:foo => "bar")   { b1 } } }
         doc2 = xml { root { a1(:bazz => "quux") { b1 } } }
         matcher = Diffaroo::Matcher.new(doc1, doc2)
-        matcher.matches.should include([doc1.at_css("a1"), doc2.at_css("a1")])
+        matcher.matches.collect{|m| m.pair}.should include([doc1.at_css("a1"), doc2.at_css("a1")])
       end
 
       it "forces a match when parent names and attributes are the same but siblings are different" do
         doc1 = xml { root { a1(:foo => "bar") { b1 "hello" ; b2 } } }
         doc2 = xml { root { a1(:foo => "bar") { b1 "hello" ; b3 } } }
         matcher = Diffaroo::Matcher.new(doc1, doc2)
-        matcher.matches.should include([doc1.at_css("a1"), doc2.at_css("a1")])
+        matcher.matches.collect{|m| m.pair}.should include([doc1.at_css("a1"), doc2.at_css("a1")])
       end
 
       it "should be unique" do
@@ -114,13 +114,15 @@ describe Diffaroo::Matcher do
         small_matcher = Diffaroo::Matcher.new(small_doc1, small_doc2)
         large_matcher = Diffaroo::Matcher.new(large_doc1, large_doc2)
 
-        small_matcher.matches.should     include([small_doc1.at_css("e1"), small_doc2.at_css("e1")])
-        small_matcher.matches.should_not include([small_doc1.at_css("d1"), small_doc2.at_css("d1")])
+        small_matches = small_matcher.matches.collect{|m| m.pair}
+        small_matches.should     include([small_doc1.at_css("e1"), small_doc2.at_css("e1")])
+        small_matches.should_not include([small_doc1.at_css("d1"), small_doc2.at_css("d1")])
 
-        large_matcher.matches.should_not include([large_doc1.at_css("e1"), large_doc2.at_css("e1")])
-        large_matcher.matches.should_not include([large_doc1.at_css("d1"), large_doc2.at_css("d1")])
-        large_matcher.matches.should     include([large_doc1.at_css("c1"), large_doc2.at_css("c1")])
-        large_matcher.matches.should_not include([large_doc1.at_css("b1"), large_doc2.at_css("b1")])
+        large_matches = large_matcher.matches.collect{|m| m.pair}
+        large_matches.should_not include([large_doc1.at_css("e1"), large_doc2.at_css("e1")])
+        large_matches.should_not include([large_doc1.at_css("d1"), large_doc2.at_css("d1")])
+        large_matches.should     include([large_doc1.at_css("c1"), large_doc2.at_css("c1")])
+        large_matches.should_not include([large_doc1.at_css("b1"), large_doc2.at_css("b1")])
       end
     end
 
@@ -140,12 +142,29 @@ describe Diffaroo::Matcher do
               a3 { b1 "hello there" }
             } }
           matcher = Diffaroo::Matcher.new(doc1, doc2)
-          matcher.matches.should include([doc1.at_css("a2"), doc2.at_css("a2")])
+          matcher.matches.collect{|m| m.pair}.should include([doc1.at_css("a2"), doc2.at_css("a2")])
         end
       end
 
       context "multiple matches' parents are same-named" do
-        it "matches the node with the same-named grandparent"
+        it "matches the node with the same-named grandparent" do
+          doc1 = xml { root {
+              wrap2 {
+                a1 { b1 { 10.times { c1 "hello there" } } ; b2 }
+              } } }
+          doc2 = xml { root {
+              wrap1 {
+                a1 { b1 { 10.times { c1 "hello there" } } }
+              }
+              wrap2 {
+                a1 { b1 { 10.times { c1 "hello there" } } }
+              }
+              wrap3 {
+                a1 { b1 { 10.times { c1 "hello there" } } }
+              } } }
+          matcher = Diffaroo::Matcher.new(doc1, doc2)
+          matcher.matches.collect{|m| m.pair}.should include([doc1.at_css("wrap2"), doc2.at_css("wrap2")])
+        end
       end
     end
   end
