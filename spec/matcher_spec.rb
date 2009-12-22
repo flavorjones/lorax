@@ -3,7 +3,22 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe Diffaroo::Matcher do
   describe "#new" do
     describe "API" do
-      it "(write some specs)"
+      it "builds a Signature for each document root" do
+        doc1 = xml { root1 }
+        doc2 = xml { root2 }
+        mock.proxy(Diffaroo::Signature).new(doc1.root)
+        mock.proxy(Diffaroo::Signature).new(doc2.root)
+        Diffaroo::Matcher.new(doc1, doc2)
+      end
+
+      it "calls match" do
+        doc1 = xml { root1 }
+        doc2 = xml { root2 }
+        mock.proxy.instance_of(Diffaroo::Matcher).match
+        Diffaroo::Matcher.new(doc1, doc2)
+      end
+
+      it "has a matches accessor"
     end
 
     describe "basic node matching" do
@@ -115,7 +130,18 @@ describe Diffaroo::Matcher do
       end
 
       context "one match's parent is same-named" do
-        it "matches the node with the same-named parent"
+        it "matches the node with the same-named parent" do
+          doc1 = xml { root {
+              a2 { b1 "hello there" ; b2 }
+            } }
+          doc2 = xml { root {
+              a1 { b1 "hello there" }
+              a2 { b1 "hello there" }
+              a3 { b1 "hello there" }
+            } }
+          matcher = Diffaroo::Matcher.new(doc1, doc2)
+          matcher.matches.should include([doc1.at_css("a2"), doc2.at_css("a2")])
+        end
       end
 
       context "multiple matches' parents are same-named" do

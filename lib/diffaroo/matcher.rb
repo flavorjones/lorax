@@ -21,13 +21,13 @@ module Diffaroo
       hash  = @signature1.hash(node1) # assumes node1 is in document1
       nodes2 = @signature2.nodes(hash)
       if nodes2
-        node2 = nodes2.first
-        if match_parents_recursively(node1, node2, match_depth(node2, @signature2))
-          true # matching a parent should abort recursing through children
-        else
-          @matches << [node1, node2]
-          false
+        nodes2.each do |node2|
+          if match_parents_recursively(node1, node2, match_depth(node2, @signature2))
+            return true # matching a parent should abort recursing through children
+          end
         end
+        @matches << [node1, nodes2.first]
+        false
       else
         node1.children.each do |child|
           break if match_recursively(child)
