@@ -145,7 +145,17 @@ describe Diffaroo::Matcher do
 
   describe "choosing the best among multiple matches" do
     context "no match's parent is same-named" do
-      it "is currently unspecified"
+      it "we don't care which node we match, just pick one" do
+        doc1 = xml { root {
+            a1 { b1 }
+          } }
+        doc2 = xml { root {
+            a2 { b1 }
+            a3 { b1 }
+          } }
+        matcher = Diffaroo::Matcher.new(doc1, doc2)
+        matcher.pairs.detect {|match| match.first == doc1.at_css("b1")}.last.name.should == "b1"
+      end
     end
 
     context "one match's parent is same-named" do
