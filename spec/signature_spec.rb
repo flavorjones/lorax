@@ -25,36 +25,26 @@ describe Diffaroo::Signature do
     end
   end
 
-  describe "#node" do
-    context "passed no argument" do
-      it "returns the subtree root" do
-        doc = xml { root { a1 "hello" } }
-        node = doc.at_css("a1")
-        sig = Diffaroo::Signature.new(node)
-        sig.node.should == node
-      end
-    end
-
-    context "passed a hash" do
-      it "returns an array of nodes matching the hash" do
-        doc = xml { root {
-            a1 "hello"
-            a1 "hello"
-            a1 "hello"
-          } }
-        nodes    = doc.css("a1")
-        doc_sig  = Diffaroo::Signature.new(doc.root)
-        node_sig = Diffaroo::Signature.new(nodes.first)
-        doc_sig.node(node_sig.hash).should =~ nodes.to_a
-      end
+  describe "#root" do
+    it "returns the subtree root" do
+      doc = xml { root { a1 "hello" } }
+      node = doc.at_css("a1")
+      sig = Diffaroo::Signature.new(node)
+      sig.root.should == node
     end
   end
 
   describe "#nodes" do
-    it "is an alias for #node" do
-      doc = xml { root }
-      sig = Diffaroo::Signature.new(doc.root)
-      sig.nodes(sig.hash).should == [doc.root]
+    it "returns an array of nodes matching the hash" do
+      doc = xml { root {
+          a1 "hello"
+          a1 "hello"
+          a1 "hello"
+        } }
+      nodes    = doc.css("a1")
+      doc_sig  = Diffaroo::Signature.new(doc.root)
+      node_sig = Diffaroo::Signature.new(nodes.first)
+      doc_sig.nodes(node_sig.hash).should =~ nodes.to_a
     end
   end
 

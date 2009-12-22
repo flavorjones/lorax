@@ -13,10 +13,13 @@ module Diffaroo
       hash(node) if node
     end
 
-    def node(hash=nil)
+    def root
+      @node
+    end
+
+    def nodes(hash=nil)
       hash ? @nodes[hash] : @node
     end
-    alias :nodes :node
 
     def size
       @size
