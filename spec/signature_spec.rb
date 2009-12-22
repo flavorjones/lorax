@@ -231,7 +231,20 @@ describe Diffaroo::Signature do
     end
 
     context "HTML" do
-      it "(write some case-insensitive HTML specs)"
+      it "should be case-insensitive" do
+        doc1 = Nokogiri::HTML <<-EOH
+        <html><body>
+          <DIV FOO="BAR">hello</DIV>
+        </body></html>
+        EOH
+        doc2 = Nokogiri::HTML <<-EOH
+        <html><body>
+          <div foo="BAR">hello</div>
+        </body></html>
+        EOH
+        assert_node_signature_equal(doc1.at_css("body").children.first,
+                                    doc2.at_css("body").children.first)
+      end
     end
   end
 
