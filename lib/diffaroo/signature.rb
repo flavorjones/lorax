@@ -4,16 +4,29 @@ module Diffaroo
   class Signature
     SEP = "\0"
 
-    attr_accessor :node, :hash, :nodes, :hashes, :weights, :weight, :size
-
     def initialize(node=nil)
       @hashes  = {} # node => hash
-      @nodes   = {} # hash => node
+      @nodes   = {} # hash => [node, ...]
       @weights = {} # node => weight
       @size    = 0
       @node    = node
-      @hash    = node ? node_hash(node) : nil
-      @weight  = @weights[node]
+      node_hash(node) if node
+    end
+
+    def node(hash=nil)
+      hash ? @nodes[hash] : @node
+    end
+
+    def hash(node=nil)
+      @hashes[node ? node : @node]
+    end
+
+    def weight(node=nil)
+      @weights[node ? node : @node]
+    end
+
+    def size
+      @size
     end
 
     def node_hash(node)
@@ -34,8 +47,8 @@ module Diffaroo
       @size += 1
       node_weight(node)
 
-      @nodes[calculated_hash]  = node
-      @hashes[node]            = calculated_hash
+      (@nodes[calculated_hash] ||= []) << node
+      @hashes[node]                    =  calculated_hash
     end
 
     def node_weight(node)
