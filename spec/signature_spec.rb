@@ -50,6 +50,14 @@ describe Diffaroo::Signature do
     end
   end
 
+  describe "#nodes" do
+    it "is an alias for #node" do
+      doc = xml { root }
+      sig = Diffaroo::Signature.new(doc.root)
+      sig.nodes(sig.hash).should == [doc.root]
+    end
+  end
+
   describe "#size" do
     it "returns the total number of nodes in the subtree" do
       doc      = xml { root { a1 "hello" } }

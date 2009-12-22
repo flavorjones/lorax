@@ -16,6 +16,7 @@ module Diffaroo
     def node(hash=nil)
       hash ? @nodes[hash] : @node
     end
+    alias :nodes :node
 
     def size
       @size
