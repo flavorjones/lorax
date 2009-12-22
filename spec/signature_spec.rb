@@ -15,15 +15,15 @@ describe Diffaroo::Signature do
     end
 
     it "does not call node_hash if param is nil" do
-      mock.instance_of(Diffaroo::Signature).node_hash(42).never
+      mock.instance_of(Diffaroo::Signature).hash(42).never
+      Diffaroo::Signature.new(nil)
     end
 
     it "calls node_hash if a param is non-nil" do
-      mock.instance_of(Diffaroo::Signature).node_hash(42).once
+      mock.instance_of(Diffaroo::Signature).hash(42).once
       Diffaroo::Signature.new(42)
     end
   end
-
 
   describe "#node" do
     context "passed no argument" do
@@ -50,6 +50,15 @@ describe Diffaroo::Signature do
     end
   end
 
+  describe "#size" do
+    it "returns the total number of nodes in the subtree" do
+      doc      = xml { root { a1 "hello" } }
+      node     = doc.at_css("a1")
+      doc_sig  = Diffaroo::Signature.new(doc.root)
+      doc_sig.size.should == 3 # root, a1, hello
+    end
+  end
+
   describe "#hash" do
     context "passed no argument" do
       it "returns the subtree root's hash" do
@@ -68,66 +77,44 @@ describe Diffaroo::Signature do
         doc_sig.hash(node).should == node_sig.hash
       end
     end
-  end
 
-  describe "#weight" do
-    context "passed no argument" do
-      it "returns the subtree root's weight" do
-        doc      = xml { root { a1 { b1 { c1 { d1 } } } } }
-        node     = doc.at_css("a1")
-        doc_sig  = Diffaroo::Signature.new(doc.root)
-        doc_sig.weight.should == 5
+    context "passed a non-Node" do
+      it "raises an error" do
+        proc { Diffaroo::Signature.new.hash(42) }.should raise_error(ArgumentError)
       end
     end
 
-    context "passed a node" do
-      it "returns the node's weight" do
-        doc      = xml { root { a1 "hello" } }
-        node     = doc.at_css("a1")
-        doc_sig  = Diffaroo::Signature.new(doc.root)
-        node_sig = Diffaroo::Signature.new(node)
-        doc_sig.weight(node).should == node_sig.weight
+    context "passed a non-text, non-element Node" do
+      it "raises an error" do
+        doc = xml { root { a1("foo" => "bar") } }
+        attr = doc.at_css("a1").attributes.first.last
+        proc { Diffaroo::Signature.new.hash(attr) }.should raise_error(ArgumentError) 
       end
-    end
-  end
-
-  describe "#size" do
-    it "returns the total number of nodes in the subtree" do
-      doc      = xml { root { a1 "hello" } }
-      node     = doc.at_css("a1")
-      doc_sig  = Diffaroo::Signature.new(doc.root)
-      doc_sig.size.should == 3 # root, a1, hello
-    end
-  end
-
-  describe "#node_hash" do
-    it "raises an error if passed a non-Node" do
-      proc { Diffaroo::Signature.new.node_hash(42) }.should raise_error(ArgumentError)
-    end
-
-    it "raises an error if passed a non-text, non-element Node" do
-      doc = xml { root { a1("foo" => "bar") } }
-      attr = doc.at_css("a1").attributes.first.last
-      proc { Diffaroo::Signature.new.node_hash(attr) }.should raise_error(ArgumentError) 
     end
 
     it "hashes each node only once" do
       doc = xml { root { a1 { b1 { c1 "hello" } } } }
       node = doc.at_css "c1"
-      mock.proxy.instance_of(Diffaroo::Signature).node_hash(anything).times(5)
-      Diffaroo::Signature.new.node_hash(doc.root)
+      mock.proxy.instance_of(Diffaroo::Signature).hash(anything).times(5)
+      Diffaroo::Signature.new.hash(doc.root)
     end
 
     it "caches hashes" do
       doc = xml { root { a1 { b1 { c1 "hello" } } } }
       node = doc.at_css "c1"
-      mock.proxy.instance_of(Diffaroo::Signature).node_hash(anything).times(6)
+      mock.proxy.instance_of(Diffaroo::Signature).hash(anything).times(6)
       sig = Diffaroo::Signature.new
-      sig.node_hash(doc.root)
-      sig.node_hash(doc.root)
+      sig.hash(doc.root)
+      sig.hash(doc.root)
     end
 
-    it "populates node weights"
+    it "calculates weights along the way" do
+      doc  = xml { root { a1 } }
+      node = doc.at_css "a1"
+      sig = Diffaroo::Signature.new
+      mock(sig).weight(node)
+      sig.hash(node)
+    end
 
     context "identical text nodes" do
       it "hashes equally" do
@@ -250,31 +237,54 @@ describe Diffaroo::Signature do
     end
   end
 
-  describe "#node_weight" do
-    it "raises an error if passed a non-Node" do
-      proc { Diffaroo::Signature.new.node_weight(42) }.should raise_error(ArgumentError)
+  describe "#weight" do
+    context "passed no argument" do
+      it "returns the subtree root's weight" do
+        doc      = xml { root { a1 { b1 { c1 { d1 } } } } }
+        node     = doc.at_css("a1")
+        doc_sig  = Diffaroo::Signature.new(doc.root)
+        doc_sig.weight.should == 5
+      end
     end
 
-    it "raises an error if passed a non-text, non-element Node" do
-      doc  = xml { root { a1("foo" => "bar") } }
-      attr = doc.at_css("a1").attributes.first.last
-      proc { Diffaroo::Signature.new.node_weight(attr) }.should raise_error(ArgumentError) 
+    context "passed a node" do
+      it "returns the node's weight" do
+        doc      = xml { root { a1 "hello" } }
+        node     = doc.at_css("a1")
+        doc_sig  = Diffaroo::Signature.new(doc.root)
+        node_sig = Diffaroo::Signature.new(node)
+        doc_sig.weight(node).should == node_sig.weight
+      end
+    end
+
+    context "passed a non-Node" do
+      it "raises an error" do
+        proc { Diffaroo::Signature.new.weight(42) }.should raise_error(ArgumentError)
+      end
+    end
+
+    context "passed a non-text, non-element Node" do
+      it "raises an error" do
+        doc  = xml { root { a1("foo" => "bar") } }
+        attr = doc.at_css("a1").attributes.first.last
+        proc { Diffaroo::Signature.new.weight(attr) }.should raise_error(ArgumentError) 
+      end
     end
 
     it "weighs each node only once" do
       doc  = xml { root { a1 { b1 { c1 "hello" } } } }
       node = doc.at_css "c1"
-      mock.proxy.instance_of(Diffaroo::Signature).node_weight(anything).times(5)
-      Diffaroo::Signature.new.node_weight(doc.root)
+      mock.proxy.instance_of(Diffaroo::Signature).weight(anything).times(5)
+      Diffaroo::Signature.new.weight(doc.root)
     end
 
     it "caches weights" do
       doc  = xml { root { a1 { b1 { c1 "hello" } } } }
       node = doc.at_css "c1"
-      mock.proxy.instance_of(Diffaroo::Signature).node_weight(anything).times(6)
+      mock.proxy.instance_of(Diffaroo::Signature).weight(anything).times(6)
       sig = Diffaroo::Signature.new
-      sig.node_weight(doc.root)
-      sig.node_weight(doc.root)
+      sig.weight(doc.root)
+      sig.weight(doc.root)
     end
 
     it "weighs empty nodes with no children as 1" do

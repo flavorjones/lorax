@@ -10,58 +10,50 @@ module Diffaroo
       @weights = {} # node => weight
       @size    = 0
       @node    = node
-      node_hash(node) if node
+      hash(node) if node
     end
 
     def node(hash=nil)
       hash ? @nodes[hash] : @node
     end
 
-    def hash(node=nil)
-      @hashes[node ? node : @node]
-    end
-
-    def weight(node=nil)
-      @weights[node ? node : @node]
-    end
-
     def size
       @size
     end
 
-    def node_hash(node)
+    def hash(node=@node)
       return @hashes[node] if @hashes.key?(node)
-      raise ArgumentError, "node_hash expects a Node, but received #{node.inspect}" unless node.is_a?(Nokogiri::XML::Node)
+      raise ArgumentError, "hash expects a Node, but received #{node.inspect}" unless node.is_a?(Nokogiri::XML::Node)
 
       calculated_hash = \
         if node.text?
           hashify node.content
         elsif node.element?
-          children_hash = hashify(node.children       .collect { |child| node_hash(child) })
-          attr_hash     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value]     }.flatten)
+          children_hash = hashify(node.children       .collect { |child| hash(child)  })
+          attr_hash     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value] }.flatten)
           hashify(node.name, attr_hash, children_hash)
         else
-          raise ArgumentError, "node_hash expects a text node or element, but received #{node.type}"
+          raise ArgumentError, "hash expects a text node or element, but received #{node.type}"
         end
 
       @size += 1
-      node_weight(node)
+      weight(node)
 
       (@nodes[calculated_hash] ||= []) << node
       @hashes[node]                    =  calculated_hash
     end
 
-    def node_weight(node)
+    def weight(node=@node)
       return @weights[node] if @weights.key?(node)
-      raise ArgumentError, "node_weight expects a Node, but received #{node.inspect}" unless node.is_a?(Nokogiri::XML::Node)
+      raise ArgumentError, "weight expects a Node, but received #{node.inspect}" unless node.is_a?(Nokogiri::XML::Node)
 
       calculated_weight = \
         if node.text?
           1 + Math.log(node.content.length)
         elsif node.element?
-          node.children.inject(1) { |sum, child| sum += node_weight(child) }
+          node.children.inject(1) { |sum, child| sum += weight(child) }
         else
-          raise ArgumentError, "node_weight expects a text node or element, but received #{node.type}"
+          raise ArgumentError, "weight expects a text node or element, but received #{node.type}"
         end
 
       @weights[node] = calculated_weight
