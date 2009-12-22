@@ -18,9 +18,10 @@ module Diffaroo
     private
 
     def match_recursively(node1)
-      hash  = @signature1.hashes[node1] # assumes node1 is in document1
-      node2 = @signature2.nodes[hash]
-      if node2
+      hash  = @signature1.hash(node1) # assumes node1 is in document1
+      nodes2 = @signature2.nodes(hash)
+      if nodes2
+        node2 = nodes2.first
         if match_parents_recursively(node1, node2, match_depth(node2, @signature2))
           true # matching a parent should abort recursing through children
         else
@@ -46,8 +47,8 @@ module Diffaroo
     end
 
     def match_depth(node, sig)
-      # puts "diffaroo: debug: #{__FILE__}:#{__LINE__}: depth #{d} = 1 + #{Math.log(sig.size)} * #{sig.weights[node]} / #{sig.weight}"
-      1 + Math.log(sig.size) * sig.weights[node] / sig.weight
+      # puts "diffaroo: debug: #{__FILE__}:#{__LINE__}: depth #{d} = 1 + #{Math.log(sig.size)} * #{sig.weight(node)} / #{sig.weight}"
+      1 + Math.log(sig.size) * sig.weight(node) / sig.weight
     end
   end
 end
