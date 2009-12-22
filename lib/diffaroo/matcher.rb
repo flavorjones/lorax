@@ -1,8 +1,6 @@
 module Diffaroo
   class Matcher
     # TODO: this class needs cleanup / refactoring.
-    attr_accessor :matches
-
     def initialize(doc1, doc2)
       @document1  = doc1
       @document2  = doc2
@@ -14,6 +12,14 @@ module Diffaroo
 
     def match
       match_recursively @document1.root
+    end
+
+    def matches
+      @matches
+    end
+
+    def pairs
+      @matches.collect { |match| match.pair }
     end
 
     private
