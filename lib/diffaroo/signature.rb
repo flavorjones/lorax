@@ -5,46 +5,46 @@ module Diffaroo
     SEP = "\0"
 
     def initialize(node=nil)
-      @hashes  = {} # node => hash
-      @nodes   = {} # hash => [node, ...]
-      @weights = {} # node => weight
-      @size    = 0
-      @node    = node
-      hash(node) if node
+      @signatures = {} # node      => signature
+      @nodes      = {} # signature => [node, ...]
+      @weights    = {} # node      => weight
+      @size       = 0
+      @node       = node
+      signature(node) if node
     end
 
     def root
       @node
     end
 
-    def nodes(hash=nil)
-      hash ? @nodes[hash] : @node
+    def nodes(sig=nil)
+      sig ? @nodes[sig] : @node
     end
 
     def size
       @size
     end
 
-    def hash(node=@node)
-      return @hashes[node] if @hashes.key?(node)
-      raise ArgumentError, "hash expects a Node, but received #{node.inspect}" unless node.is_a?(Nokogiri::XML::Node)
+    def signature(node=@node)
+      return @signatures[node] if @signatures.key?(node)
+      raise ArgumentError, "signature expects a Node, but received #{node.inspect}" unless node.is_a?(Nokogiri::XML::Node)
 
-      calculated_hash = \
+      calculated_sig = \
         if node.text?
           hashify node.content
         elsif node.element?
-          children_hash = hashify(node.children       .collect { |child| hash(child)  })
-          attr_hash     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value] }.flatten)
-          hashify(node.name, attr_hash, children_hash)
+          children_sig = hashify(node.children       .collect { |child| signature(child) })
+          attr_sig     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value]     }.flatten)
+          hashify(node.name, attr_sig, children_sig)
         else
-          raise ArgumentError, "hash expects a text node or element, but received #{node.type}"
+          raise ArgumentError, "signature expects a text node or element, but received #{node.type}"
         end
 
       @size += 1
       weight(node)
 
-      (@nodes[calculated_hash] ||= []) << node
-      @hashes[node]                    =  calculated_hash
+      (@nodes[calculated_sig] ||= []) << node
+      @signatures[node]               =  calculated_sig
     end
 
     def weight(node=@node)

@@ -1,12 +1,12 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe Diffaroo::Signature do
-  def assert_node_hash_equal(node1, node2)
-    Diffaroo::Signature.new(node1).hash.should == Diffaroo::Signature.new(node2).hash
+  def assert_node_signature_equal(node1, node2)
+    Diffaroo::Signature.new(node1).signature.should == Diffaroo::Signature.new(node2).signature
   end
 
-  def assert_node_hash_not_equal(node1, node2)
-    Diffaroo::Signature.new(node1).hash.should_not == Diffaroo::Signature.new(node2).hash
+  def assert_node_signature_not_equal(node1, node2)
+    Diffaroo::Signature.new(node1).signature.should_not == Diffaroo::Signature.new(node2).signature
   end
 
   describe ".new" do
@@ -14,13 +14,13 @@ describe Diffaroo::Signature do
       proc { Diffaroo::Signature.new }.should_not raise_error
     end
 
-    it "does not call node_hash if param is nil" do
-      mock.instance_of(Diffaroo::Signature).hash(42).never
+    it "does not call signature if param is nil" do
+      mock.instance_of(Diffaroo::Signature).signature(42).never
       Diffaroo::Signature.new(nil)
     end
 
-    it "calls node_hash if a param is non-nil" do
-      mock.instance_of(Diffaroo::Signature).hash(42).once
+    it "calls signature if a param is non-nil" do
+      mock.instance_of(Diffaroo::Signature).signature(42).once
       Diffaroo::Signature.new(42)
     end
   end
@@ -35,7 +35,7 @@ describe Diffaroo::Signature do
   end
 
   describe "#nodes" do
-    it "returns an array of nodes matching the hash" do
+    it "returns an array of nodes matching the signature" do
       doc = xml { root {
           a1 "hello"
           a1 "hello"
@@ -44,7 +44,7 @@ describe Diffaroo::Signature do
       nodes    = doc.css("a1")
       doc_sig  = Diffaroo::Signature.new(doc.root)
       node_sig = Diffaroo::Signature.new(nodes.first)
-      doc_sig.nodes(node_sig.hash).should =~ nodes.to_a
+      doc_sig.nodes(node_sig.signature).should =~ nodes.to_a
     end
   end
 
@@ -57,28 +57,28 @@ describe Diffaroo::Signature do
     end
   end
 
-  describe "#hash" do
+  describe "#signature" do
     context "passed no argument" do
-      it "returns the subtree root's hash" do
+      it "returns the subtree root's signature" do
         doc = xml { root { a1 "hello" } }
         sig = Diffaroo::Signature.new(doc.root)
-        sig.hash.should == sig.hash(doc.root)
+        sig.signature.should == sig.signature(doc.root)
       end
     end
 
     context "passed a node" do
-      it "returns the node's hash" do
+      it "returns the node's signature" do
         doc      = xml { root { a1 "hello" } }
         node     = doc.at_css("a1")
         doc_sig  = Diffaroo::Signature.new(doc.root)
         node_sig = Diffaroo::Signature.new(node)
-        doc_sig.hash(node).should == node_sig.hash
+        doc_sig.signature(node).should == node_sig.signature
       end
     end
 
     context "passed a non-Node" do
       it "raises an error" do
-        proc { Diffaroo::Signature.new.hash(42) }.should raise_error(ArgumentError)
+        proc { Diffaroo::Signature.new.signature(42) }.should raise_error(ArgumentError)
       end
     end
 
@@ -86,24 +86,24 @@ describe Diffaroo::Signature do
       it "raises an error" do
         doc = xml { root { a1("foo" => "bar") } }
         attr = doc.at_css("a1").attributes.first.last
-        proc { Diffaroo::Signature.new.hash(attr) }.should raise_error(ArgumentError) 
+        proc { Diffaroo::Signature.new.signature(attr) }.should raise_error(ArgumentError) 
       end
     end
 
     it "hashes each node only once" do
       doc = xml { root { a1 { b1 { c1 "hello" } } } }
       node = doc.at_css "c1"
-      mock.proxy.instance_of(Diffaroo::Signature).hash(anything).times(5)
-      Diffaroo::Signature.new.hash(doc.root)
+      mock.proxy.instance_of(Diffaroo::Signature).signature(anything).times(5)
+      Diffaroo::Signature.new.signature(doc.root)
     end
 
-    it "caches hashes" do
+    it "caches signaturees" do
       doc = xml { root { a1 { b1 { c1 "hello" } } } }
       node = doc.at_css "c1"
-      mock.proxy.instance_of(Diffaroo::Signature).hash(anything).times(6)
+      mock.proxy.instance_of(Diffaroo::Signature).signature(anything).times(6)
       sig = Diffaroo::Signature.new
-      sig.hash(doc.root)
-      sig.hash(doc.root)
+      sig.signature(doc.root)
+      sig.signature(doc.root)
     end
 
     it "calculates weights along the way" do
@@ -111,122 +111,122 @@ describe Diffaroo::Signature do
       node = doc.at_css "a1"
       sig = Diffaroo::Signature.new
       mock(sig).weight(node)
-      sig.hash(node)
+      sig.signature(node)
     end
 
     context "identical text nodes" do
-      it "hashes equally" do
+      it "have equal signatures" do
         doc = xml { root {
             span "hello"
             span "hello"
           } }
-        assert_node_hash_equal(*doc.css("span").collect { |n| n.children.first })
+        assert_node_signature_equal(*doc.css("span").collect { |n| n.children.first })
       end
     end
 
     context "different text nodes" do
-      it "hashes differently" do
+      it "have inequal signatures" do
         doc = xml { root {
             span "hello"
             span "goodbye"
           } }
-        assert_node_hash_not_equal(*doc.css("span").collect { |n| n.children.first })
+        assert_node_signature_not_equal(*doc.css("span").collect { |n| n.children.first })
       end
     end
 
     context "elements with same name (with no attributes and no content)" do
-      it "hashes equally" do
+      it "have equal signatures" do
         doc = xml { root { a1 ; a1 } }
-        assert_node_hash_equal(*doc.css("a1"))
+        assert_node_signature_equal(*doc.css("a1"))
       end
     end
 
     context "elements with different names" do
-      it "hashes differently" do
+      it "have inequal signatures" do
         doc = xml { root { a1 ; a2 } }
-        assert_node_hash_not_equal doc.at_css("a1"), doc.at_css("a2")
+        assert_node_signature_not_equal doc.at_css("a1"), doc.at_css("a2")
       end
     end
 
     context "same elements in different docs" do
-      it "hashes equally" do
+      it "have equal signatures" do
         doc1 = xml { root { a1 } }
         doc2 = xml { root { a1 } }
-        assert_node_hash_equal doc1.at_css("a1"), doc2.at_css("a1")
+        assert_node_signature_equal doc1.at_css("a1"), doc2.at_css("a1")
       end
     end
 
     context "elements with same name and content (with no attributes)" do
       context "and content is the same" do
-        it "hashes equally" do
+        it "have equal signatures" do
           doc = xml { root {
               a1 "hello"
               a1 "hello"
             } }
-          assert_node_hash_equal(*doc.css("a1"))
+          assert_node_signature_equal(*doc.css("a1"))
         end
       end
 
       context "and content is not the same" do
-        it "hashes equally" do
+        it "have inequal signatures" do
           doc = xml { root {
               a1 "hello"
               a1 "goodbye"
             } }
-          assert_node_hash_not_equal(*doc.css("a1"))
+          assert_node_signature_not_equal(*doc.css("a1"))
         end
       end
     end
 
     context "elements with same name and children (with no attributes)" do
       context "and children are in the same order" do
-        it "hashes equally" do
+        it "have equal signatures" do
           doc = xml { root {
               a1 { b1 ; b2 }
               a1 { b1 ; b2 }
             } }
-          assert_node_hash_equal(*doc.css("a1"))
+          assert_node_signature_equal(*doc.css("a1"))
         end
       end
 
       context "and children are not in the same order" do
-        it "hashes differently" do
+        it "have inequal signatures" do
           doc = xml { root {
               a1 { b1 ; b2 }
               a1 { b2 ; b1 }
             } }
-          assert_node_hash_not_equal(*doc.css("a1"))
+          assert_node_signature_not_equal(*doc.css("a1"))
         end
       end
     end
 
     context "elements with same name and same attributes (with no content)" do
-      it "hashes equally" do
+      it "have equal signatures" do
         doc = xml { root {
             a1("foo" => "bar", "bazz" => "quux")
             a1("foo" => "bar", "bazz" => "quux")
           } }
-        assert_node_hash_equal(*doc.css("a1"))
+        assert_node_signature_equal(*doc.css("a1"))
       end
     end
 
     context "elements with same name and different attributes (with no content)" do
-      it "hashes differently" do
+      it "have inequal signatures" do
         doc = xml { root {
             a1("foo" => "bar", "bazz" => "quux")
             a1("foo" => "123", "bazz" => "456")
           } }
-        assert_node_hash_not_equal(*doc.css("a1"))
+        assert_node_signature_not_equal(*doc.css("a1"))
       end
     end
 
     context "attributes reverse-engineered to be similar" do
-      it "hashes differently" do
+      it "have inequal signatures" do
         doc = xml { root {
             a1("foo" => "bar#{Diffaroo::Signature::SEP}quux")
             a1("foo#{Diffaroo::Signature::SEP}bar" => "quux")
           } }
-        assert_node_hash_not_equal(*doc.css("a1"))
+        assert_node_signature_not_equal(*doc.css("a1"))
       end
     end
 

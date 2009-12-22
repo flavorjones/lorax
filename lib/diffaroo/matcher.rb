@@ -19,8 +19,8 @@ module Diffaroo
     private
 
     def match_recursively(node1)
-      hash   = @signature1.hash(node1) # assumes node1 is in document1
-      candidates = @signature2.nodes(hash)
+      sig1       = @signature1.signature(node1) # assumes node1 is in document1
+      candidates = @signature2.nodes(sig1)
 
       if candidates
         parent_matches = candidates.collect do |node2|
