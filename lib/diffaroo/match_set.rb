@@ -25,6 +25,14 @@ module Diffaroo
       @matched_nodes.member? node
     end
 
+    def complement(node)
+      # TODO: THIS NEEDS TO BE O(1)!!
+      @matches.each do |match|
+        return *(match.pair - [node]) if match.pair.include?(node)
+      end
+      nil
+    end
+
     def add(match)
       match.pair.each { |node| @matched_nodes.add node }
       @matches << match

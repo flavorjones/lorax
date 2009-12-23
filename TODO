@@ -16,3 +16,4 @@
 *** indexes (ascendant lookahead) needs to be implemented?
 * build an rspec differ for xml
 * Signature should have methods and not raw hash accessors
+* MatchSet#complement needs to be O(1) not O(nmatches)

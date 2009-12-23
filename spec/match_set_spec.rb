@@ -74,6 +74,37 @@ describe Diffaroo::MatchSet do
     end
   end
 
+  describe "#complement" do
+    context "passed a node that has not been matched" do
+      it "returns nil" do
+        doc1 = xml { root }
+        doc2 = doc1.dup
+        match_set = Diffaroo::MatchSet.new(doc1, doc2)
+        match_set.complement(doc1.root).should be_nil
+      end
+    end
+
+    context "given a matched node from document1" do
+      it "returns the matching node from document2" do
+        doc1 = xml { root }
+        doc2 = doc1.dup
+        match_set = Diffaroo::MatchSet.new(doc1, doc2)
+        match_set.add Diffaroo::Match.new(doc1.root, doc2.root, 0)
+        match_set.complement(doc1.root).should == doc2.root
+      end
+    end
+
+    context "given a matched node from document2" do
+      it "returns the matching node from document1" do
+        doc1 = xml { root }
+        doc2 = doc1.dup
+        match_set = Diffaroo::MatchSet.new(doc1, doc2)
+        match_set.add Diffaroo::Match.new(doc1.root, doc2.root, 0)
+        match_set.complement(doc2.root).should == doc1.root
+      end
+    end
+  end
+
   describe "#add" do
     before do
       doc1 = xml { root1 { a1 } }
