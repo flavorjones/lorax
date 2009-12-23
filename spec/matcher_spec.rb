@@ -38,6 +38,24 @@ describe Diffaroo::Matcher do
     end
   end
 
+  describe "#matched?" do
+    before do
+      @doc1    = xml { root1 { a1 } }
+      @doc2    = xml { root2 { a1 } }
+      @matcher = Diffaroo::Matcher.new(@doc1, @doc2)
+    end
+
+    it "returns true if the node has been matched" do
+      @matcher.matched?(@doc1.at_css("a1")).should be_true
+      @matcher.matched?(@doc2.at_css("a1")).should be_true
+    end
+
+    it "returns false if the node has not been matched" do
+      @matcher.matched?(@doc1.at_css("root1")).should be_false
+      @matcher.matched?(@doc2.at_css("root2")).should be_false
+    end
+  end
+
   describe "basic node matching" do
     context "simple matches" do
       before do
@@ -97,7 +115,7 @@ describe Diffaroo::Matcher do
       matcher.pairs.should include([doc1.at_css("a1"), doc2.at_css("a1")])
     end
 
-    it "should be unique" do
+    it "should not match any children" do
       large_doc1 = xml { root { a1 { b1 { c1 { d1 { e1 {
                     10.times { f1 "hello" }
                     f2
@@ -110,7 +128,7 @@ describe Diffaroo::Matcher do
       large_matcher.matches.size.should == 1
     end
 
-    it "large subtree matches force more parent matches" do
+    it "large subtree matches force more parent matches than smaller subtree matches" do
       small_doc1 = xml { root { a1 { b1 { c1 { d1 { e1 {
                     f1 "hello"
                     f2
@@ -143,7 +161,7 @@ describe Diffaroo::Matcher do
     end
   end
 
-  describe "choosing the best among multiple matches" do
+  describe "choosing the best among multiple possible matches" do
     context "no match's parent is same-named" do
       it "we don't care which node we match, just pick one" do
         doc1 = xml { root {

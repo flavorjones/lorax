@@ -1,3 +1,5 @@
+require "set"
+
 module Diffaroo
   class Matcher
     # TODO: this class needs cleanup / refactoring.
@@ -7,6 +9,7 @@ module Diffaroo
       @signature1 = Diffaroo::Signature.new(@document1.root)
       @signature2 = Diffaroo::Signature.new(@document2.root)
       @matches    = []
+      @matched_nodes = Set.new
       match
     end
 
@@ -22,7 +25,16 @@ module Diffaroo
       @matches.collect { |match| match.pair }
     end
 
+    def matched?(node)
+      @matched_nodes.member? node
+    end
+
     private
+
+    def add(match)
+      match.pair.each { |node| @matched_nodes.add node }
+      @matches << match
+    end
 
     def match_recursively(node1)
       sig1       = @signature1.signature(node1) # assumes node1 is in document1
@@ -34,10 +46,10 @@ module Diffaroo
         end
         parent_matches.compact!
         if ! parent_matches.empty?
-          @matches << parent_matches.max {|a, b| a.parent_offset <=> b.parent_offset}
+          add parent_matches.max {|a, b| a.parent_offset <=> b.parent_offset}
           return true # matching a parent should abort recursing through children
         else
-          @matches << Match.new(node1, candidates.first, 0)
+          add Match.new(node1, candidates.first, 0)
         end
       else
         node1.children.each do |child|
