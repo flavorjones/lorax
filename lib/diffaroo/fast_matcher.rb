@@ -16,7 +16,7 @@ module Diffaroo
         end
         parent_matches.compact!
         if ! parent_matches.empty?
-          matcher.add parent_matches.max {|a, b| a.parent_offset <=> b.parent_offset}
+          matcher.add parent_matches.max {|a, b| a.weight <=> b.weight}
           return true # matching a parent should abort recursing through children
         else
           matcher.add Match.new(node1, candidates.first, 0)

@@ -21,7 +21,7 @@ describe Diffaroo::Match do
     it "returns the integer passed to the initializer" do
       doc1 = xml { root }
       doc2 = xml { root }
-      Diffaroo::Match.new(doc1.root, doc2.root, 42).parent_offset.should == 42
+      Diffaroo::Match.new(doc1.root, doc2.root, 42).weight.should == 42
     end
   end
 end
