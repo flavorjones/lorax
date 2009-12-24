@@ -82,7 +82,27 @@ describe Diffaroo::Signature do
       end
     end
 
-    context "passed a non-text, non-element Node" do
+    context "passed a cdata Node" do
+      it "treats it like a leaf text node" do
+        doc = xml { root { cdata "hello" } }
+        node = doc.root.children.first
+        doc_sig  = Diffaroo::Signature.new(doc.root)
+        node_sig = Diffaroo::Signature.new(node)
+        doc_sig.signature(node).should == node_sig.signature
+      end
+    end
+
+    context "passed a comment Node" do
+      it "treats it like a leaf text node" do
+        doc = Nokogiri::XML "<root><!-- hello --></root>"
+        node = doc.root.children.first
+        doc_sig  = Diffaroo::Signature.new(doc.root)
+        node_sig = Diffaroo::Signature.new(node)
+        doc_sig.signature(node).should == node_sig.signature
+      end
+    end
+
+    context "passed a non-text, non-cdata, non-comment, non-element Node" do
       it "raises an error" do
         doc = xml { root { a1("foo" => "bar") } }
         attr = doc.at_css("a1").attributes.first.last
@@ -274,7 +294,27 @@ describe Diffaroo::Signature do
       end
     end
 
-    context "passed a non-text, non-element Node" do
+    context "passed a cdata Node" do
+      it "treats it like a leaf text node" do
+        doc = xml { root { cdata "hello" } }
+        node = doc.root.children.first
+        doc_sig  = Diffaroo::Signature.new(doc.root)
+        node_sig = Diffaroo::Signature.new(node)
+        doc_sig.weight(node).should == node_sig.weight
+      end
+    end
+
+    context "passed a comment Node" do
+      it "treats it like a leaf text node" do
+        doc = Nokogiri::XML "<root><!-- hello --></root>"
+        node = doc.root.children.first
+        doc_sig  = Diffaroo::Signature.new(doc.root)
+        node_sig = Diffaroo::Signature.new(node)
+        doc_sig.weight(node).should == node_sig.weight
+      end
+    end
+
+    context "passed a non-text, non-cdata, non-comment, non-element Node" do
       it "raises an error" do
         doc  = xml { root { a1("foo" => "bar") } }
         attr = doc.at_css("a1").attributes.first.last
