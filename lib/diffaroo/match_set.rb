@@ -27,6 +27,7 @@ module Diffaroo
 
     def complement(node)
       # TODO: THIS NEEDS TO BE O(1)!!
+      return nil unless matched?(node)
       @matches.each do |match|
         return *(match.pair - [node]) if match.pair.include?(node)
       end
