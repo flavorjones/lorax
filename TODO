@@ -1,5 +1,14 @@
 -*-org-*-
 
+* classes?
+  - Signature: calculate and persist signatures and weights for nodes in a single document
+  - Match:     represents a match between two nodes
+  - MatchSet:  composed of Signatures and Matches.
+  - Matcher:   an algorithm that operates on a MatchSet statelessly to generate matches.
+  - Generator: generates a DeltaSet from a MatchSet
+  - Delta:     an atomic change step
+  - DeltaSet:  an ordered set of Deltas
+  - Apply:     f(doc1, DeltaSet) -> doc2
 * hoe params
 * license
 * rdocs
