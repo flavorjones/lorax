@@ -1,4 +1,4 @@
-require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
+require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Diffaroo::Signature do
   def assert_node_signature_equal(node1, node2)
