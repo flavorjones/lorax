@@ -11,3 +11,11 @@ require "diffaroo/match"
 require "diffaroo/match_set"
 require "diffaroo/fast_matcher"
 require "diffaroo/match_optimizer"
+
+require "diffaroo/delta_set"
+
+module Diffaroo
+  def Diffaroo.diff(document1, document2)
+    DeltaSet.new
+  end
+end
