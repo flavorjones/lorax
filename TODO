@@ -9,7 +9,7 @@
   - Delta:     an atomic change step
   - DeltaSet:  an ordered set of Deltas
   - Apply:     f(doc1, DeltaSet) -> doc2
-* hoe params
+* gemspec params
 * license
 * rdocs
 * readme
@@ -52,4 +52,5 @@
     node2: \#<Nokogiri::XML::Element:...>
 - delete:
     node1: \#<Nokogiri::XML::Element:...>
-
+* try to make the code independent of the tree we're diffing
+  think about diffing any tree, e.g. AST, YAML
