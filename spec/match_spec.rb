@@ -24,4 +24,20 @@ describe Diffaroo::Match do
       Diffaroo::Match.new(doc1.root, doc2.root, 42).weight.should == 42
     end
   end
+
+  describe "#other" do
+    context "the node is in the pair" do
+      it "returns the other node" do
+        match = Diffaroo::Match.new :a, :b, 0
+        match.other(:a).should == :b
+        match.other(:b).should == :a
+      end
+    end
+
+    context "the node is not in the pair" do
+      it "returns nil" do
+        Diffaroo::Match.new(:a, :b, 0).other(:c).should be_nil
+      end
+    end
+  end
 end
