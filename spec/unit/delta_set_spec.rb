@@ -11,7 +11,18 @@ describe Diffaroo::DeltaSet do
       proc { Diffaroo::DeltaSet.new 1 }.should raise_error(ArgumentError)
     end
 
-    it "generates insert deltas"
+    it "generates insert delta" do
+      doc1 = xml { root }
+      doc2 = doc1.dup
+      match_set = Diffaroo::MatchSet.new doc1, doc2
+      delta_set = Diffaroo::DeltaSet.new match_set
+
+      delta_set.deltas.size.should == 1
+      delta = delta_set.deltas.first
+      delta.should be_instance_of(Diffaroo::InsertDelta)
+      delta.xpath.should == "/"
+      delta.node.should == doc2.at_css("root")
+    end
   end
 
   describe "#add" do

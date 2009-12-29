@@ -34,7 +34,7 @@ module Diffaroo
     def generate_inserts_and_moves_recursively node
       match = match_set.match node
       if match.nil?
-        add Delta.new(:insert, node, node.parent.path)
+        add InsertDelta.new(node, node.parent.path)
       end
       # return if match.perfect?
       # create an update delta
