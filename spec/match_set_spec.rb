@@ -74,6 +74,30 @@ describe Diffaroo::MatchSet do
     end
   end
 
+  describe "#match" do
+    before do
+      @doc1 = xml { root1 { a1 } }
+      @doc2 = xml { root2 { a1 } }
+      @match_set = Diffaroo::MatchSet.new(@doc1, @doc2)
+    end
+
+    context "when there is a match" do
+      before { @match_set.add Diffaroo::Match.new(@doc1.at_css("a1"), @doc2.at_css("a1"), 0) }
+
+      it "returns the match" do
+        @match_set.matched?(@doc1.at_css("a1")).should be_true
+        @match_set.matched?(@doc2.at_css("a1")).should be_true
+      end
+    end
+
+    context "when there is no match" do
+      it "returns nil" do
+        @match_set.matched?(@doc1.at_css("a1")).should be_false
+        @match_set.matched?(@doc2.at_css("a1")).should be_false
+      end
+    end
+  end
+
   describe "#complement" do
     context "passed a node that has not been matched" do
       it "returns nil" do
