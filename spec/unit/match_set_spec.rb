@@ -40,7 +40,7 @@ describe Diffaroo::MatchSet do
 
     context "when there is a match for the node" do
       before do
-        @match = Diffaroo::Match.new(@doc1.at_css("a1"), @doc2.at_css("a1"), 0)
+        @match = Diffaroo::Match.new(@doc1.at_css("a1"), @doc2.at_css("a1"))
         @match_set.add @match
       end
 

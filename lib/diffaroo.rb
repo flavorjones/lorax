@@ -10,7 +10,6 @@ require "diffaroo/signature"
 require "diffaroo/match"
 require "diffaroo/match_set"
 require "diffaroo/fast_matcher"
-require "diffaroo/match_optimizer"
 
 require "diffaroo/delta"
 require "diffaroo/delta_set"
@@ -22,7 +21,6 @@ module Diffaroo
     match_set   = MatchSet.new doc1, doc2
 
     Diffaroo::FastMatcher.match match_set
-    Diffaroo::MatchOptimizer.match match_set
 
     DeltaSet.new match_set
   end

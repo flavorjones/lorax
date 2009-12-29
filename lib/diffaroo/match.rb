@@ -1,10 +1,9 @@
 module Diffaroo
   class Match
-    attr_accessor :pair, :weight
+    attr_accessor :pair
 
-    def initialize(node1, node2, weight)
+    def initialize(node1, node2)
       @pair = [node1, node2]
-      @weight = weight
     end
 
     def other(node)

@@ -11,16 +11,14 @@ module Diffaroo
       candidates = matcher.signature2.nodes(sig1)
 
       if candidates
-        parent_matches = candidates.collect do |node2|
-          match_parents_recursively(node1, node2, match_depth(node2, matcher.signature2))
+        upward_matches = candidates.collect do |node2|
+          upward_match(node1, node2, match_depth(node2, matcher.signature2))
         end
-        parent_matches.compact!
-        if ! parent_matches.empty?
-          matcher.add parent_matches.max {|a, b| a.weight <=> b.weight}
-          return true # matching a parent should abort recursing through children
-        else
-          matcher.add Match.new(node1, candidates.first, 0)
+        longest_trail = upward_matches.max { |a, b| a.length <=> b.length }
+        longest_trail.each do |match|
+          matcher.add match
         end
+        return true if longest_trail.length > 1 # matching a parent should abort recursing through children
       else
         node1.children.each do |child|
           break if match_recursively(matcher, child)
@@ -29,18 +27,21 @@ module Diffaroo
       false
     end
 
-    def FastMatcher.match_parents_recursively(node1, node2, depth, max_depth=depth)
-      if depth >= 1 && node1.parent.name == node2.parent.name && ! node1.parent.is_a?(Nokogiri::XML::Document)
-        more_parents = match_parents_recursively(node1.parent, node2.parent, depth-1, max_depth)
-        return more_parents || Match.new(node1.parent, node2.parent, max_depth + 1 - depth)
+    def FastMatcher.upward_match(node1, node2, max_depth)
+      matches = [Match.new(node1, node2)]
+      curr1, curr2 = node1.parent, node2.parent
+      1.upto(max_depth) do
+        break unless curr1.name == curr2.name && ! curr1.is_a?(Nokogiri::XML::Document)
+        matches << Match.new(curr1, curr2)
+        curr1, curr2 = curr1.parent, curr2.parent
       end
-      nil
+      matches
     end
 
     def FastMatcher.match_depth(node, sig)
-      d = 1 + Math.log(sig.size) * sig.weight(node) / sig.weight
-      # puts "diffaroo: debug: #{__FILE__}:#{__LINE__}: depth #{d} = 1 + #{Math.log(sig.size)} * #{sig.weight(node)} / #{sig.weight}"
-      d.to_i
+      depth = 1 + Math.log(sig.size) * sig.weight(node) / sig.weight
+      # puts "diffaroo: debug: #{__FILE__}:#{__LINE__}: depth #{depth} = 1 + #{Math.log(sig.size)} * #{sig.weight(node)} / #{sig.weight}"
+      depth.to_i
     end
   end
 end
