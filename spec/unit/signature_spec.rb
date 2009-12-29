@@ -78,7 +78,7 @@ describe Diffaroo::Signature do
 
     context "passed a non-Node" do
       it "raises an error" do
-        proc { Diffaroo::Signature.new.signature(42) }.should raise_error(ArgumentError)
+        proc { Diffaroo::Signature.new.signature(42) }.should raise_error(ArgumentError, /signature expects a Node/)
       end
     end
 
@@ -106,7 +106,7 @@ describe Diffaroo::Signature do
       it "raises an error" do
         doc = xml { root { a1("foo" => "bar") } }
         attr = doc.at_css("a1").attributes.first.last
-        proc { Diffaroo::Signature.new.signature(attr) }.should raise_error(ArgumentError) 
+        proc { Diffaroo::Signature.new.signature(attr) }.should raise_error(ArgumentError, /signature expects an element/) 
       end
     end
 
@@ -290,7 +290,7 @@ describe Diffaroo::Signature do
 
     context "passed a non-Node" do
       it "raises an error" do
-        proc { Diffaroo::Signature.new.weight(42) }.should raise_error(ArgumentError)
+        proc { Diffaroo::Signature.new.weight(42) }.should raise_error(ArgumentError, /weight expects a Node/)
       end
     end
 
@@ -318,7 +318,7 @@ describe Diffaroo::Signature do
       it "raises an error" do
         doc  = xml { root { a1("foo" => "bar") } }
         attr = doc.at_css("a1").attributes.first.last
-        proc { Diffaroo::Signature.new.weight(attr) }.should raise_error(ArgumentError) 
+        proc { Diffaroo::Signature.new.weight(attr) }.should raise_error(ArgumentError, /weight expects an element/) 
       end
     end
 

@@ -37,7 +37,7 @@ module Diffaroo
           attr_sig     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value]     }.flatten)
           hashify(node.name, attr_sig, children_sig)
         else
-          raise ArgumentError, "signature expects a text node or element, but received #{node.class}"
+          raise ArgumentError, "signature expects an element, text, cdata or comment node, but received #{node.class}"
         end
 
       @size += 1
@@ -57,7 +57,7 @@ module Diffaroo
         elsif node.element?
           node.children.inject(1) { |sum, child| sum += weight(child) }
         else
-          raise ArgumentError, "weight expects a text node or element, but received #{node.class}"
+          raise ArgumentError, "weight expects an element, text, cdata or comment node, but received #{node.class}"
         end
 
       @weights[node] = calculated_weight
