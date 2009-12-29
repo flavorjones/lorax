@@ -8,8 +8,8 @@ module Diffaroo
     end
 
     def apply!(document)
-      parent = document.xpath(xpath)
-      raise NodeNotFound, xpath unless parent
+      parent = document.at_xpath(xpath)
+      raise NodeNotFoundError, xpath unless parent
       parent << node.dup # TODO: patch nokogiri to make this efficient
     end
   end

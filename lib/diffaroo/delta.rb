@@ -1,6 +1,6 @@
 module Diffaroo
   class Delta
-    class NodeNotFound < RuntimeError ; end
+    class NodeNotFoundError < RuntimeError ; end
 
     def apply!(document)
       raise NotImplementedError
