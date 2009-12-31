@@ -16,7 +16,7 @@ describe Diffaroo::FastMatcher do
 
       it "matches identical nodes" do
         match_set = Diffaroo::FastMatcher.match(@doc1, @doc2)
-        assert_match_exists match_set, @doc1.at_css("a1"), @doc2.at_css("a1")
+        assert_perfect_match_exists match_set, @doc1.at_css("a1"), @doc2.at_css("a1")
       end
 
       it "does not match different nodes" do
@@ -40,9 +40,9 @@ describe Diffaroo::FastMatcher do
             a5 "again"
           } }
         match_set = Diffaroo::FastMatcher.match(doc1, doc2)
-        assert_match_exists match_set, doc1.at_css("a1"), doc2.at_css("a1")
-        assert_match_exists match_set, doc1.at_css("a3"), doc2.at_css("a3")
-        assert_match_exists match_set, doc1.at_css("a5"), doc2.at_css("a5")
+        assert_perfect_match_exists match_set, doc1.at_css("a1"), doc2.at_css("a1")
+        assert_perfect_match_exists match_set, doc1.at_css("a3"), doc2.at_css("a3")
+        assert_perfect_match_exists match_set, doc1.at_css("a5"), doc2.at_css("a5")
       end
     end
 
@@ -54,7 +54,7 @@ describe Diffaroo::FastMatcher do
 
       it "matches the root nodes of the largest identical subtree" do
         match_set = Diffaroo::FastMatcher.match(@doc1, @doc2)
-        assert_match_exists match_set, @doc1.at_css("a1"), @doc2.at_css("a1")
+        assert_perfect_match_exists match_set, @doc1.at_css("a1"), @doc2.at_css("a1")
       end
 
       it "does not match children of identical match nodes" do
@@ -69,16 +69,39 @@ describe Diffaroo::FastMatcher do
       doc1 = xml { root { a1(:foo => "bar")   { b1 } } }
       doc2 = xml { root { a1(:bazz => "quux") { b1 } } }
       match_set = Diffaroo::FastMatcher.match(doc1, doc2)
-      assert_match_exists match_set, doc1.at_css("b1"), doc2.at_css("b1")
-      assert_match_exists match_set, doc1.at_css("a1"), doc2.at_css("a1")
+      assert_perfect_match_exists match_set, doc1.at_css("b1"), doc2.at_css("b1")
+      assert_forced_match_exists  match_set, doc1.at_css("a1"), doc2.at_css("a1")
     end
 
     it "forces a match when parent names and attributes are the same but siblings are different" do
       doc1 = xml { root { a1(:foo => "bar") { b1 "hello" ; b2 } } }
       doc2 = xml { root { a1(:foo => "bar") { b1 "hello" ; b3 } } }
       match_set = Diffaroo::FastMatcher.match(doc1, doc2)
-      assert_match_exists match_set, doc1.at_css("b1"), doc2.at_css("b1")
-      assert_match_exists match_set, doc1.at_css("a1"), doc2.at_css("a1")
+      assert_perfect_match_exists match_set, doc1.at_css("b1"), doc2.at_css("b1")
+      assert_forced_match_exists  match_set, doc1.at_css("a1"), doc2.at_css("a1")
+    end
+
+    describe "subsequent forced child matching" do
+      it "force matches a uniquely-named sibling" do
+        doc1 = xml { root { a1 {
+              b1 "hello"
+              b2 "goodbye"
+              b3
+              b4
+            } } }
+        doc2 = xml { root { a1 {
+              b1 "hello"
+              b2 "good boy"
+              b3 "something"
+              b4 { c1 }
+            } } }
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
+        assert_perfect_match_exists match_set, doc1.at_css("b1"), doc2.at_css("b1")
+        assert_forced_match_exists  match_set, doc1.at_css("a1"), doc2.at_css("a1")
+        assert_forced_match_exists  match_set, doc1.at_css("b2"), doc2.at_css("b2")
+        assert_forced_match_exists  match_set, doc1.at_css("b3"), doc2.at_css("b3")
+        assert_forced_match_exists  match_set, doc1.at_css("b4"), doc2.at_css("b4")
+      end
     end
 
     it "large subtree matches force more parent matches than smaller subtree matches" do
@@ -102,13 +125,13 @@ describe Diffaroo::FastMatcher do
       small_match_set = Diffaroo::FastMatcher.match(small_doc1, small_doc2)
       large_match_set = Diffaroo::FastMatcher.match(large_doc1, large_doc2)
 
-      assert_match_exists    small_match_set, small_doc1.at_css("e1"), small_doc2.at_css("e1")
-      assert_no_match_exists small_match_set, small_doc1.at_css("d1"), small_doc2.at_css("d1")
+      assert_forced_match_exists small_match_set, small_doc1.at_css("e1"), small_doc2.at_css("e1")
+      assert_no_match_exists     small_match_set, small_doc1.at_css("d1"), small_doc2.at_css("d1")
 
-      assert_match_exists    large_match_set, large_doc1.at_css("e1"), large_doc2.at_css("e1")
-      assert_match_exists    large_match_set, large_doc1.at_css("d1"), large_doc2.at_css("d1")
-      assert_match_exists    large_match_set, large_doc1.at_css("c1"), large_doc2.at_css("c1")
-      assert_no_match_exists large_match_set, large_doc1.at_css("b1"), large_doc2.at_css("b1")
+      assert_forced_match_exists large_match_set, large_doc1.at_css("e1"), large_doc2.at_css("e1")
+      assert_forced_match_exists large_match_set, large_doc1.at_css("d1"), large_doc2.at_css("d1")
+      assert_forced_match_exists large_match_set, large_doc1.at_css("c1"), large_doc2.at_css("c1")
+      assert_no_match_exists     large_match_set, large_doc1.at_css("b1"), large_doc2.at_css("b1")
     end
   end
 
@@ -138,7 +161,7 @@ describe Diffaroo::FastMatcher do
             a3 { b1 "hello there" }
           } }
         match_set = Diffaroo::FastMatcher.match(doc1, doc2)
-        assert_match_exists match_set, doc1.at_css("a2"), doc2.at_css("a2")
+        assert_forced_match_exists match_set, doc1.at_css("a2"), doc2.at_css("a2")
       end
     end
 
@@ -159,7 +182,7 @@ describe Diffaroo::FastMatcher do
               a1 { b1 { 10.times { c1 "hello there" } } }
             } } }
         match_set = Diffaroo::FastMatcher.match(doc1, doc2)
-        assert_match_exists match_set, doc1.at_css("wrap2"), doc2.at_css("wrap2")
+        assert_forced_match_exists match_set, doc1.at_css("wrap2"), doc2.at_css("wrap2")
       end
     end
   end

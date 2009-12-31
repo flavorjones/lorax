@@ -14,6 +14,11 @@ module Diffaroo
       @matches[node]
     end
 
+    def matches
+      puts "MIKE: #{__FILE__}:#{__LINE__} REMOVE ME THIS IS FOR DEBUGGING ONLY"
+      @matches.values.uniq.collect {|m| m.pair.first.path}
+    end
+
     def add(match)
       match.pair.each { |node| @matches[node] = match }
     end

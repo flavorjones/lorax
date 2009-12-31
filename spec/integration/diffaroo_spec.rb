@@ -17,32 +17,40 @@ describe Diffaroo do
   end
 
   context "inserted nodes" do
-    context "appended to matching siblings" do
-      it "round-trips" do
-        doc1 = xml { root {
-            a1 "hello"
-          } }
-        doc2 = xml { root {
-            a1 "hello"
-            a2 "goodbye"
-          } }
-        round_trip_should_succeed doc1, doc2
-      end
+    it "handles appends to matching siblings" do
+      doc1 = xml { root {
+          a1 "hello"
+        } }
+      doc2 = xml { root {
+          a1 "hello"
+          a2 "goodbye"
+        } }
+      round_trip_should_succeed doc1, doc2
     end
 
-    context "inserted into matching siblings" do
-      it "round-trips" do
-        doc1 = xml { root {
-            a1 "hello"
-            a3 "goodbye"
-          } }
-        doc2 = xml { root {
-            a1 "hello"
-            a2
-            a3 "goodbye"
-          } }
-        round_trip_should_succeed doc1, doc2
-      end
+    it "inserts into matching siblings" do
+      doc1 = xml { root {
+          a1 "hello"
+          a3 "goodbye"
+        } }
+      doc2 = xml { root {
+          a1 "hello"
+          a2
+          a3 "goodbye"
+        } }
+      round_trip_should_succeed doc1, doc2
+    end
+
+    it "inserts under an existing sibling node" do
+      doc1 = xml { root {
+          a1 "hello"
+          a2
+        } }
+      doc2 = xml { root {
+          a1 "hello"
+          a2 { b1 "subnode" }
+        } }
+      round_trip_should_succeed doc1, doc2
     end
   end
 end
