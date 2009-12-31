@@ -1,10 +1,6 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe Diffaroo::FastMatcher do
-  def new_fast_matched(doc1, doc2)
-    Diffaroo::FastMatcher.match(doc1, doc2)
-  end
-
   describe "basic node matching" do
     context "simple matches" do
       before do
@@ -19,13 +15,34 @@ describe Diffaroo::FastMatcher do
       end
 
       it "matches identical nodes" do
-        match_set = new_fast_matched(@doc1, @doc2)
+        match_set = Diffaroo::FastMatcher.match(@doc1, @doc2)
         assert_match_exists match_set, @doc1.at_css("a1"), @doc2.at_css("a1")
       end
 
       it "does not match different nodes" do
-        match_set = new_fast_matched(@doc1, @doc2)
+        match_set = Diffaroo::FastMatcher.match(@doc1, @doc2)
         assert_no_match_exists match_set, @doc1.at_css("b1"), @doc2.at_css("b2")
+      end
+    end
+
+    context "sibling matches" do
+      it "matches all siblings" do
+        doc1 = xml { root {
+            a1 "hello"
+            a3 "goodbye"
+            a5 "again"
+          } }
+        doc2 = xml { root {
+            a1 "hello"
+            a2 "middleman"
+            a3 "goodbye"
+            a4 "good boy"
+            a5 "again"
+          } }
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
+        assert_match_exists match_set, doc1.at_css("a1"), doc2.at_css("a1")
+        assert_match_exists match_set, doc1.at_css("a3"), doc2.at_css("a3")
+        assert_match_exists match_set, doc1.at_css("a5"), doc2.at_css("a5")
       end
     end
 
@@ -36,12 +53,12 @@ describe Diffaroo::FastMatcher do
       end
 
       it "matches the root nodes of the largest identical subtree" do
-        match_set = new_fast_matched(@doc1, @doc2)
+        match_set = Diffaroo::FastMatcher.match(@doc1, @doc2)
         assert_match_exists match_set, @doc1.at_css("a1"), @doc2.at_css("a1")
       end
 
       it "does not match children of identical match nodes" do
-        match_set = new_fast_matched(@doc1, @doc2)
+        match_set = Diffaroo::FastMatcher.match(@doc1, @doc2)
         assert_no_match_exists match_set, @doc1.at_css("b1"), @doc2.at_css("b1")
       end
     end
@@ -51,7 +68,7 @@ describe Diffaroo::FastMatcher do
     it "forces a match when parent names are the same but attributes are different" do
       doc1 = xml { root { a1(:foo => "bar")   { b1 } } }
       doc2 = xml { root { a1(:bazz => "quux") { b1 } } }
-      match_set = new_fast_matched(doc1, doc2)
+      match_set = Diffaroo::FastMatcher.match(doc1, doc2)
       assert_match_exists match_set, doc1.at_css("b1"), doc2.at_css("b1")
       assert_match_exists match_set, doc1.at_css("a1"), doc2.at_css("a1")
     end
@@ -59,7 +76,7 @@ describe Diffaroo::FastMatcher do
     it "forces a match when parent names and attributes are the same but siblings are different" do
       doc1 = xml { root { a1(:foo => "bar") { b1 "hello" ; b2 } } }
       doc2 = xml { root { a1(:foo => "bar") { b1 "hello" ; b3 } } }
-      match_set = new_fast_matched(doc1, doc2)
+      match_set = Diffaroo::FastMatcher.match(doc1, doc2)
       assert_match_exists match_set, doc1.at_css("b1"), doc2.at_css("b1")
       assert_match_exists match_set, doc1.at_css("a1"), doc2.at_css("a1")
     end
@@ -82,8 +99,8 @@ describe Diffaroo::FastMatcher do
                     f3
                   } } } } } } }
 
-      small_match_set = new_fast_matched(small_doc1, small_doc2)
-      large_match_set = new_fast_matched(large_doc1, large_doc2)
+      small_match_set = Diffaroo::FastMatcher.match(small_doc1, small_doc2)
+      large_match_set = Diffaroo::FastMatcher.match(large_doc1, large_doc2)
 
       assert_match_exists    small_match_set, small_doc1.at_css("e1"), small_doc2.at_css("e1")
       assert_no_match_exists small_match_set, small_doc1.at_css("d1"), small_doc2.at_css("d1")
@@ -105,7 +122,7 @@ describe Diffaroo::FastMatcher do
             a2 { b1 }
             a3 { b1 }
           } }
-        match_set = new_fast_matched(doc1, doc2)
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
         match_set.match(doc1.at_css("b1")).other(doc1.at_css("b1")).name.should == "b1"
       end
     end
@@ -120,7 +137,7 @@ describe Diffaroo::FastMatcher do
             a2 { b1 "hello there" }
             a3 { b1 "hello there" }
           } }
-        match_set = new_fast_matched(doc1, doc2)
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
         assert_match_exists match_set, doc1.at_css("a2"), doc2.at_css("a2")
       end
     end
@@ -141,7 +158,7 @@ describe Diffaroo::FastMatcher do
             wrap3 {
               a1 { b1 { 10.times { c1 "hello there" } } }
             } } }
-        match_set = new_fast_matched(doc1, doc2)
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
         assert_match_exists match_set, doc1.at_css("wrap2"), doc2.at_css("wrap2")
       end
     end
