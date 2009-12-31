@@ -1,27 +1,29 @@
 module Diffaroo
   module FastMatcher
-    def FastMatcher.match(matcher)
-      match_recursively matcher, matcher.signature1.root
+    def FastMatcher.match(doc1, doc2)
+      match_set = MatchSet.new(doc1, doc2)
+      match_recursively match_set, match_set.signature1.root
+      match_set
     end
 
     private
 
-    def FastMatcher.match_recursively(matcher, node1)
-      sig1       = matcher.signature1.signature(node1) # assumes node1 is in signature1
-      candidates = matcher.signature2.nodes(sig1)
+    def FastMatcher.match_recursively(match_set, node1)
+      sig1       = match_set.signature1.signature(node1) # assumes node1 is in signature1
+      candidates = match_set.signature2.nodes(sig1)
 
       if candidates
         upward_matches = candidates.collect do |node2|
-          upward_match(node1, node2, match_depth(node2, matcher.signature2))
+          upward_match(node1, node2, match_depth(node2, match_set.signature2))
         end
         longest_trail = upward_matches.max { |a, b| a.length <=> b.length }
         longest_trail.each do |match|
-          matcher.add match
+          match_set.add match
         end
         return true if longest_trail.length > 1 # matching a parent should abort recursing through children
       else
         node1.children.each do |child|
-          break if match_recursively(matcher, child)
+          break if match_recursively(match_set, child)
         end
       end
       false

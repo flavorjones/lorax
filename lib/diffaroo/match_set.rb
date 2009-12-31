@@ -17,5 +17,9 @@ module Diffaroo
     def add(match)
       match.pair.each { |node| @matches[node] = match }
     end
+
+    def to_delta_set
+      DeltaSetGenerator.generate_delta_set(self)
+    end
   end
 end

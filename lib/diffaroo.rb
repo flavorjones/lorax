@@ -12,17 +12,15 @@ require "diffaroo/match_set"
 require "diffaroo/fast_matcher"
 
 require "diffaroo/delta"
+require "diffaroo/delta_set_generator"
 require "diffaroo/delta_set"
 
 module Diffaroo
   def Diffaroo.diff(string_or_io_or_nokogiridoc_1, string_or_io_or_nokogiridoc_2)
-    doc1        = documentize string_or_io_or_nokogiridoc_1
-    doc2        = documentize string_or_io_or_nokogiridoc_2
-    match_set   = MatchSet.new doc1, doc2
+    doc1      = documentize string_or_io_or_nokogiridoc_1
+    doc2      = documentize string_or_io_or_nokogiridoc_2
 
-    Diffaroo::FastMatcher.match match_set
-
-    DeltaSet.new match_set
+    Diffaroo::FastMatcher.match(doc1, doc2).to_delta_set
   end
 
   private

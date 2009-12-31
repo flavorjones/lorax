@@ -1,14 +1,9 @@
 module Diffaroo
   class DeltaSet
-    attr_accessor :match_set, :deltas
+    attr_accessor :deltas
 
-    def initialize(match_set)
-      @match_set = match_set
+    def initialize
       @deltas = []
-      if match_set
-        raise ArgumentError, "DeltaSet.new expects a MatchSet but received a #{match_set.class}" unless match_set.is_a?(MatchSet)
-        generate_deltas
-      end
     end
 
     def add(delta)
@@ -25,26 +20,5 @@ module Diffaroo
       end
       document
     end
-
-    def generate_deltas
-      generate_inserts_and_moves_recursively match_set.signature2.root
-      # generate_deletes_recursively
-    end
-
-    private
-
-    def generate_inserts_and_moves_recursively node
-      match = match_set.match node
-      if match.nil?
-        add InsertDelta.new(node, node.parent.path)
-      else
-        node.children.each { |child| generate_inserts_and_moves_recursively child }
-      end
-      # return if match.perfect?
-      # create an update delta
-    end
-
-    # def generate_deletes_recursively
-    # end
   end
 end

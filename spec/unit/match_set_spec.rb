@@ -57,4 +57,14 @@ describe Diffaroo::MatchSet do
       end
     end
   end
+
+  describe "#to_delta_set" do
+    it "invokes DeltaSetGenerator.generate_delta_set on itself" do
+      doc1 = xml { root1 }
+      doc2 = xml { root2 }
+      match_set = Diffaroo::MatchSet.new(doc1, doc2)
+      mock(Diffaroo::DeltaSetGenerator).generate_delta_set(match_set)
+      match_set.to_delta_set
+    end
+  end
 end

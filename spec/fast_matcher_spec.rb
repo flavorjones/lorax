@@ -2,9 +2,7 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe Diffaroo::FastMatcher do
   def new_fast_matched(doc1, doc2)
-    matcher = Diffaroo::MatchSet.new(doc1, doc2)
-    Diffaroo::FastMatcher.match(matcher)
-    matcher
+    Diffaroo::FastMatcher.match(doc1, doc2)
   end
 
   describe "basic node matching" do

@@ -16,7 +16,16 @@ describe Diffaroo do
         } }
 
       delta_set = Diffaroo.diff(doc1, doc2)
+
+      puts delta_set.deltas.inspect
+
       new_doc = delta_set.apply(doc1)
+
+      puts doc1
+      puts "-----"
+      puts doc2
+      puts "-----"
+      puts new_doc
 
       Diffaroo::Signature.new(new_doc.root).signature.should == Diffaroo::Signature.new(doc2.root).signature
     end
