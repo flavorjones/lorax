@@ -27,9 +27,30 @@ describe Diffaroo::DeltaSetGenerator do
       match_set.add Diffaroo::Match.new(doc1.at_css("root"), doc2.at_css("root"))
       match_set.add Diffaroo::Match.new(doc1.at_css("a1"),   doc2.at_css("a1"), :perfect => true)
       delta_set = Diffaroo::DeltaSetGenerator.generate_delta_set(match_set)
-      puts delta_set.deltas.inspect
       delta_set.deltas.length.should == 1
       delta_set.deltas.first.should be_instance_of(Diffaroo::InsertDelta)
+    end
+
+    it "should generate InsertDeltas for missing siblings" do
+      doc1 = xml { root {
+          a1 "hello"
+          a3 "goodbye"
+          a5 "again"
+        } }
+      doc2 = xml { root {
+          a1 "hello"
+          a2 "middleman"
+          a3 "goodbye"
+          a4 "good boy"
+          a5 "again"
+        } }
+      match_set = Diffaroo::MatchSet.new doc1, doc2
+      match_set.add Diffaroo::Match.new(doc1.at_css("a1"), doc2.at_css("a1"), :perfect => true)
+      match_set.add Diffaroo::Match.new(doc1.at_css("a3"), doc2.at_css("a3"), :perfect => true)
+      match_set.add Diffaroo::Match.new(doc1.at_css("a5"), doc2.at_css("a5"), :perfect => true)
+      match_set.add Diffaroo::Match.new(doc1.at_css("root"), doc2.at_css("root"))
+      delta_set = Diffaroo::DeltaSetGenerator.generate_delta_set(match_set)
+      delta_set.deltas.length.should == 2
     end
   end
 end
