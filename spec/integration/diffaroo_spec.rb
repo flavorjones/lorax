@@ -44,20 +44,5 @@ describe Diffaroo do
         round_trip_should_succeed doc1, doc2
       end
     end
-
-    it "is able to recreate doc2 based on doc1 and the DeltaSet" do
-      doc1 = xml { root {
-          a1 "hello"
-          a2
-        } }
-      doc2 = xml { root {
-          a1 "hello"
-          a2 {
-            b1 "subnode"
-          }
-          a3 "goodbye"
-        } }
-      round_trip_should_succeed doc1, doc2
-    end
   end
 end

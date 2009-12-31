@@ -17,7 +17,8 @@ module Diffaroo
           node.children.each { |child| generate_inserts_and_moves_recursively delta_set, match_set, child }
         end
       else
-        delta_set.add InsertDelta.new(node, node.parent.path)
+        # TODO: node.parent.children.index(node)) !?
+        delta_set.add InsertDelta.new(node, node.parent.path, node.parent.children.index(node))
       end
     end
 

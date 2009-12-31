@@ -1,17 +1,23 @@
 module Diffaroo
   class InsertDelta < Delta
-    attr_accessor :operation, :node, :xpath
+    attr_accessor :node, :xpath, :position
 
-    def initialize(node, xpath)
-      @node      = node
-      @xpath     = xpath
+    def initialize(node, xpath, position)
+      @node     = node
+      @xpath    = xpath
+      @position = position
     end
 
     def apply!(document)
+      # TODO: patch nokogiri to make inserting node copies efficient
       parent = document.at_xpath(xpath)
       raise NodeNotFoundError, xpath unless parent
-      parent << node.dup # TODO: patch nokogiri to make this efficient
+      children = parent.children
+      if children.empty? || position >= children.length
+        parent << node.dup
+      else
+        children[position].add_previous_sibling(node.dup)
+      end
     end
   end
 end
-

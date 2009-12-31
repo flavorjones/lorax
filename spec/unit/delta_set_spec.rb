@@ -24,8 +24,8 @@ describe Diffaroo::DeltaSet do
     it "invokes apply! on each delta in order" do
       doc = xml { root }
       delta_set = Diffaroo::DeltaSet.new
-      delta1 = Diffaroo::InsertDelta.new(:foo, :bar)
-      delta2 = Diffaroo::InsertDelta.new(:foo, :bar)
+      delta1 = Diffaroo::InsertDelta.new(:foo, :bar, :quux)
+      delta2 = Diffaroo::InsertDelta.new(:foo, :bar, :quux)
       delta_set.add delta1
       delta_set.add delta2
 
