@@ -11,13 +11,14 @@ module Diffaroo
 
     def self.generate_inserts_and_moves_recursively delta_set, match_set, node
       match = match_set.match node
-      if match.nil?
-        delta_set.add InsertDelta.new(node, node.parent.path)
+      if match
+        if ! match.perfect?
+          # create an update delta
+          node.children.each { |child| generate_inserts_and_moves_recursively delta_set, match_set, child }
+        end
       else
-        node.children.each { |child| generate_inserts_and_moves_recursively delta_set, match_set, child }
+        delta_set.add InsertDelta.new(node, node.parent.path)
       end
-      # return if match.perfect?
-      # create an update delta
     end
 
     # def generate_deletes_recursively

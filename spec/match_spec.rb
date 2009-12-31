@@ -1,19 +1,38 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
 describe Diffaroo::Match do
+  before do
+    @doc1 = xml { root }
+    @doc2 = xml { root }
+  end
+
   describe "#new" do
-    it "takes two nodes and an integer as arguments" do
-      doc1 = xml { root }
-      doc2 = xml { root }
-      proc { Diffaroo::Match.new(doc1.root, doc2.root) }.should_not raise_error
+    it "takes two nodes as arguments" do
+      proc { Diffaroo::Match.new(@doc1.root, @doc2.root) }.should_not raise_error
+    end
+
+    it "takes optional options" do
+      proc { Diffaroo::Match.new(@doc1.root, @doc2.root, {:perfect => true}) }.should_not raise_error
+    end
+  end
+
+  describe "#perfect" do
+    it "returns true if {:perfect => true} option was passed to #new" do
+      Diffaroo::Match.new(@doc1.root, @doc2.root, {:perfect => true}).should be_perfect      
+    end
+
+    it "returns false if {:perfect => false} option was passed to #new" do
+      Diffaroo::Match.new(@doc1.root, @doc2.root, {:perfect => false}).should_not be_perfect      
+    end
+
+    it "returns false if no :perfect option was passed to #new" do
+      Diffaroo::Match.new(@doc1.root, @doc2.root).should_not be_perfect      
     end
   end
 
   describe "#pair" do
     it "returns the two nodes in an array" do
-      doc1 = xml { root }
-      doc2 = xml { root }
-      Diffaroo::Match.new(doc1.root, doc2.root).pair.should == [doc1.root, doc2.root]
+      Diffaroo::Match.new(@doc1.root, @doc2.root).pair.should == [@doc1.root, @doc2.root]
     end
   end
 

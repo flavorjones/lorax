@@ -15,6 +15,9 @@ describe Diffaroo do
           a3 "goodbye"
         } }
 
+      ms = Diffaroo::FastMatcher.match(doc1, doc2)
+      puts ms.instance_variable_get("@matches").values.uniq.collect {|n| n.pair.first.name}
+
       delta_set = Diffaroo.diff(doc1, doc2)
 
       puts delta_set.deltas.inspect

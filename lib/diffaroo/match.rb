@@ -2,8 +2,13 @@ module Diffaroo
   class Match
     attr_accessor :pair
 
-    def initialize(node1, node2)
-      @pair = [node1, node2]
+    def initialize(node1, node2, options={})
+      @pair    = [node1, node2]
+      @perfect = options[:perfect] ? true : false
+    end
+
+    def perfect?
+      @perfect
     end
 
     def other(node)
