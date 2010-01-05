@@ -389,4 +389,63 @@ describe Diffaroo::Signature do
       end
     end
   end
+
+  describe "#monogram" do
+    context "passed no argument" do
+      it "returns the subtree root's signature" do
+        doc = xml { root { a1(:foo => :bar) } }
+        sig = Diffaroo::Signature.new(doc.root)
+        sig.monogram.should == sig.monogram(doc.root)
+      end
+    end
+
+    context "passed a node" do
+      it "returns the node's signature" do
+        doc      = xml { root { a1(:foo => :bar) } }
+        node     = doc.at_css("a1")
+        doc_sig  = Diffaroo::Signature.new(doc.root)
+        node_sig = Diffaroo::Signature.new(node)
+        doc_sig.monogram(node).should == node_sig.monogram
+      end
+    end
+
+    context "passed a non-Node" do
+      it "raises an error" do
+        proc { Diffaroo::Signature.new.monogram(42) }.should raise_error(ArgumentError, /signature expects a Node/)
+      end
+    end
+
+    context "text nodes" do
+      it "returns the signature as the monogram" do
+        doc = xml { root { text "hello" } }
+        node = doc.root.children.first
+        sig = Diffaroo::Signature.new(doc.root)
+        sig.monogram(node).should == sig.signature(node)
+      end
+    end
+
+    context "element nodes" do
+      it "is equal for nodes with equal names and attributes" do
+        doc = xml { root {
+            a1(:foo => :bar, :bazz => :quux) { text "hello" }
+            a1(:foo => :bar, :bazz => :quux) { b1 }
+            a1(:foo => :bar, :bazz => :quux)
+          } }
+        nodes = doc.css("a1")
+        sig = Diffaroo::Signature.new(doc.root)
+        sig.monogram(nodes[0]).should == sig.monogram(nodes[1])
+        sig.monogram(nodes[1]).should == sig.monogram(nodes[2])
+      end
+
+      it "is inequal for nodes with different attributes" do
+        doc = xml { root {
+            a1(:foo => :bar)
+            a1(:foo => :bar, :bazz => :quux)
+          } }
+        nodes = doc.css("a1")
+        sig = Diffaroo::Signature.new(doc.root)
+        sig.monogram(nodes[0]).should_not == sig.monogram(nodes[1])
+      end
+    end
+  end
 end

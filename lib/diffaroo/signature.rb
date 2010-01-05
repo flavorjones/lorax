@@ -6,6 +6,7 @@ module Diffaroo
 
     def initialize(node=nil)
       @signatures = {} # node      => signature
+      @monograms  = {} # node      => monogram (signature not including children)
       @nodes      = {} # signature => [node, ...]
       @weights    = {} # node      => weight
       @size       = 0
@@ -29,24 +30,25 @@ module Diffaroo
       return @signatures[node] if @signatures.key?(node)
       raise ArgumentError, "signature expects a Node, but received #{node.inspect}" unless node.is_a?(Nokogiri::XML::Node)
 
-      calculated_sig = \
-        if node.text? || node.cdata? || node.comment?
-          hashify node.content
-        elsif node.type == Nokogiri::XML::Node::ENTITY_REF_NODE
-          hashify node.to_html
-        elsif node.element?
-          children_sig = hashify(node.children       .collect { |child| signature(child) })
-          attr_sig     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value]     }.flatten)
-          hashify(node.name, attr_sig, children_sig)
-        else
-          raise ArgumentError, "signature expects an element, text, cdata or comment node, but received #{node.class}"
-        end
+      if node.text? || node.cdata? || node.comment?
+        monogram     = signature = hashify(node.content)
+      elsif node.type == Nokogiri::XML::Node::ENTITY_REF_NODE
+        monogram     = signature = hashify(node.to_html)
+      elsif node.element?
+        children_sig = hashify(node.children       .collect { |child| signature(child) })
+        attr_sig     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value]     }.flatten)
+        monogram     = hashify(node.name, attr_sig)
+        signature    = hashify(node.name, attr_sig, children_sig)
+      else
+        raise ArgumentError, "signature expects an element, text, cdata or comment node, but received #{node.class}"
+      end
 
       @size += 1
       weight(node)
 
-      (@nodes[calculated_sig] ||= []) << node
-      @signatures[node]               =  calculated_sig
+      (@nodes[signature] ||= []) << node
+      @monograms[node]           =  monogram
+      @signatures[node]          =  signature
     end
 
     def weight(node=@node)
@@ -65,6 +67,12 @@ module Diffaroo
         end
 
       @weights[node] = calculated_weight
+    end
+
+    def monogram(node=@node)
+      return @monograms[node] if @monograms.key?(node)
+      signature(node)
+      @monograms[node]
     end
 
     private

@@ -13,7 +13,9 @@ module Diffaroo
       match = match_set.match node
       if match
         if ! match.perfect?
-          delta_set.add ModifyDelta.new(match.pair.first, match.pair.last)
+          if match_set.signature1.monogram(match.pair.first) != match_set.signature2.monogram(match.pair.last)
+            delta_set.add ModifyDelta.new(match.pair.first, match.pair.last)
+          end
           node.children.each { |child| generate_inserts_and_moves_recursively delta_set, match_set, child }
         end
       else
