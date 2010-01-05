@@ -6,15 +6,13 @@ require "diffaroo"
 delta = Diffaroo.diff(File.read(ARGV[0]), File.read(ARGV[1]))
 summary = delta.deltas.map do |d|
   if d.is_a?(Diffaroo::InsertDelta)
-    if d.node.text?
-      [:insert, d.xpath, d.node.name, d.node.content]
-    else
-      [:insert, d.xpath, d.node.name]
-    end
+    [:insert, d.xpath, d.position, d.node.name, d.node.to_html]
+  elsif d.is_a?(Diffaroo::DeleteDelta)
+    [:delete, d.node.path, d.node.name, d.node.to_html]
   else
     [:modify, d.node1.path, d.node1.name, d.node1.attributes.map{|k,v| [k, v.value]},
               d.node2.path, d.node2.name, d.node2.attributes.map{|k,v| [k, v.value]} ]
   end
 end
 
-pp summary
+puts summary.to_yaml

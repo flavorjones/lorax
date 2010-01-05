@@ -2,6 +2,7 @@
 Diffaroo TODO
 
 * write integration test for modify
+* change API to specify HTML or XML
 
 * classes?
   - Signature: calculate and persist signatures and weights for nodes in a single document
