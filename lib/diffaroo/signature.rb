@@ -32,6 +32,8 @@ module Diffaroo
       calculated_sig = \
         if node.text? || node.cdata? || node.comment?
           hashify node.content
+        elsif node.type == Nokogiri::XML::Node::ENTITY_REF_NODE
+          hashify node.to_html
         elsif node.element?
           children_sig = hashify(node.children       .collect { |child| signature(child) })
           attr_sig     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value]     }.flatten)
@@ -54,6 +56,8 @@ module Diffaroo
       calculated_weight = \
         if node.text? || node.cdata? || node.comment?
           1 + Math.log(node.content.length)
+        elsif node.type == Nokogiri::XML::Node::ENTITY_REF_NODE
+          1
         elsif node.element?
           node.children.inject(1) { |sum, child| sum += weight(child) }
         else

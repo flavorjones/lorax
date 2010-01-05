@@ -102,7 +102,17 @@ describe Diffaroo::Signature do
       end
     end
 
-    context "passed a non-text, non-cdata, non-comment, non-element Node" do
+    context "passed an entity reference Node" do
+      it "treats it like a leaf text node" do
+        doc = Nokogiri::XML %q(<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><span>&nbsp;</span></html>)
+        node = doc.at_css("span").children.first
+        doc_sig  = Diffaroo::Signature.new(doc.root)
+        node_sig = Diffaroo::Signature.new(node)
+        doc_sig.signature(node).should == node_sig.signature
+      end
+    end
+
+    context "passed an invalid Node" do
       it "raises an error" do
         doc = xml { root { a1("foo" => "bar") } }
         attr = doc.at_css("a1").attributes.first.last
@@ -314,7 +324,17 @@ describe Diffaroo::Signature do
       end
     end
 
-    context "passed a non-text, non-cdata, non-comment, non-element Node" do
+    context "passed an entity reference Node" do
+      it "treats it like a leaf text node" do
+        doc = Nokogiri::XML %q(<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><span>&nbsp;</span></html>)
+        node = doc.at_css("span").children.first
+        doc_sig  = Diffaroo::Signature.new(doc.root)
+        node_sig = Diffaroo::Signature.new(node)
+        doc_sig.weight(node).should == node_sig.weight
+      end
+    end
+
+    context "passed an invalid Node" do
       it "raises an error" do
         doc  = xml { root { a1("foo" => "bar") } }
         attr = doc.at_css("a1").attributes.first.last

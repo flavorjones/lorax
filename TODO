@@ -29,18 +29,6 @@
     - algorithm would ignore changed content (I think?)
 *** indexes (ascendant lookahead) needs to be implemented?
 *** if we do "phase 3" in weight-order, and recursively match parents, can't we avoid the "propagate to parent" step of phase 4?
-* "flavorjones" matcher
-  - calculate sigs and weights
-  - traverse tree in weight order. for each node:
-    - find candidates
-    - select best candidate based on how far up ancestor tree we can go
-    - force-match all possible ancestors of best match
-  - traverse force-matched nodes in weight order. for each node:
-    - if there are uniquely-named pairs children, force-match them
-  - generate delta:
-    - each match is either exact, self-same, or same-name. the latter two are subsets of the forced-matched set.
-      - same-name contains an attribute delta. self-same does not.
-
 * delta
 - modify:
     node1: \#<Nokogiri::XML::Element:...>
