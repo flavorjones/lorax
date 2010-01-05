@@ -1,0 +1,15 @@
+#! /usr/bin/env ruby
+
+require 'pp'
+require "diffaroo"
+
+delta = Diffaroo.diff(File.read(ARGV[0]), File.read(ARGV[1]))
+summary = delta.deltas.map do |d|
+  if d.node.text?
+    [d.node.name, d.node.content, d.xpath]
+  else
+    [d.node.name, d.xpath]
+  end
+end
+
+pp summary
