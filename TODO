@@ -1,4 +1,7 @@
--*-org-*-
+# -*-org-*-
+Diffaroo TODO
+
+* write integration test for modify
 
 * classes?
   - Signature: calculate and persist signatures and weights for nodes in a single document

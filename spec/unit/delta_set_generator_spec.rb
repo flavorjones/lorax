@@ -62,6 +62,29 @@ describe Diffaroo::DeltaSetGenerator do
         delta_set.deltas.select { |d| d.is_a?(Diffaroo::ModifyDelta) }.length.should == 1
       end
 
+      context "imperfect self-same match with children" do
+        it "should handle children as expected" do
+          doc1 = xml { root {
+              a1
+              a2
+              a4(:foo => :bar)
+            } }
+          doc2 = xml { root {
+              a2
+              a3
+              a4(:foo => :quux)
+            } }
+          match_set = Diffaroo::MatchSet.new doc1, doc2
+          match_set.add Diffaroo::Match.new doc1.root, doc2.root
+          match_set.add Diffaroo::Match.new doc1.at_css("a2"), doc2.at_css("a2"), :perfect => true
+          match_set.add Diffaroo::Match.new doc1.at_css("a4"), doc2.at_css("a4")
+          delta_set = Diffaroo::DeltaSetGenerator.generate_delta_set(match_set)
+          delta_set.deltas.select { |d| d.is_a?(Diffaroo::InsertDelta) }.length.should == 1 # a3
+          delta_set.deltas.select { |d| d.is_a?(Diffaroo::ModifyDelta) }.length.should == 1 # a4
+          # delta_set.deltas.select { |d| d.is_a?(Diffaroo::DeleteDelta) }.length.should == 1 # a1 # TODO
+        end
+      end
+
       it "should not be generated for nodes that are imperfectly matched but are self-same" do
         doc1 = xml { root(:foo => :bar) { a1 } }
         doc2 = xml { root(:foo => :bar) { a2 } }
