@@ -9,3 +9,4 @@ module Diffaroo
 end
 
 require "diffaroo/delta/insert_delta"
+require "diffaroo/delta/modify_delta"
