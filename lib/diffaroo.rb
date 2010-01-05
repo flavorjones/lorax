@@ -31,7 +31,7 @@ module Diffaroo
     if string_or_io_or_nokogiridoc.is_a?(Nokogiri::XML::Document)
       string_or_io_or_nokogiridoc
     else
-      Nokogiri::XML string_or_io_or_nokogiridoc
+      Nokogiri string_or_io_or_nokogiridoc
     end
   end
 end
