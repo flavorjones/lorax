@@ -84,14 +84,14 @@ describe Diffaroo::FastMatcher do
     describe "subsequent forced child matching" do
       it "force matches a uniquely-named sibling" do
         doc1 = xml { root { a1 {
-              b1 "hello"
               b2 "goodbye"
+              b1 "hello"
               b3
               b4
             } } }
         doc2 = xml { root { a1 {
-              b1 "hello"
               b2 "good boy"
+              b1 "hello"
               b3 "something"
               b4 { c1 }
             } } }
