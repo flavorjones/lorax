@@ -46,6 +46,24 @@ describe Diffaroo::FastMatcher do
       end
     end
 
+    context "matching children of an unmatched node" do
+      it "matches those children" do
+        doc1 = xml { root {
+            a1 {
+              b1 ; b2
+            }
+          } }
+        doc2 = xml { root {
+            a2 {
+              b1 ; b2
+            }
+          } }
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
+        assert_perfect_match_exists match_set, doc1.at_css("b1"), doc2.at_css("b1")
+        assert_perfect_match_exists match_set, doc1.at_css("b2"), doc2.at_css("b2")
+      end
+    end
+
     context "nested matches" do
       before do
         @doc1 = xml { root1 { a1 { b1 "hello" } } }
@@ -162,6 +180,25 @@ describe Diffaroo::FastMatcher do
           } }
         match_set = Diffaroo::FastMatcher.match(doc1, doc2)
         assert_forced_match_exists match_set, doc1.at_css("a2"), doc2.at_css("a2")
+      end
+    end
+
+    context "multiple identical nodes exist in both documents" do
+      it "should create one-to-one match relationships" do
+        doc1 = xml { root1 {
+            a1 ; a1 ; a1
+          } }
+        doc2 = xml { root2 {
+            a1 ; a1
+          } }
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
+        [doc1, doc2].each do |doc|
+          others = doc.css("a1").collect do |node|
+            m = match_set.match(node)
+            m ? m.pair.last : nil
+          end
+          others.uniq.length.should == others.length
+        end
       end
     end
 

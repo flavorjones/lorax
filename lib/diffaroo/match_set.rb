@@ -16,7 +16,7 @@ module Diffaroo
 
     def matches
       puts "MIKE: #{__FILE__}:#{__LINE__} REMOVE ME THIS IS FOR DEBUGGING ONLY"
-      @matches.values.uniq.collect {|m| m.pair.first.path}
+      @matches.values.uniq.collect {|m| [m.pair.first.path, m.pair.last.path, m.perfect?]}
     end
 
     def add(match)

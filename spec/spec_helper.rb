@@ -7,6 +7,7 @@ require 'diffaroo'
 require 'spec'
 require 'spec/autorun'
 require 'rr'
+require 'pp'
 
 warn "#{__FILE__}:#{__LINE__}: libxml version info: #{Nokogiri::VERSION_INFO.inspect}"
 

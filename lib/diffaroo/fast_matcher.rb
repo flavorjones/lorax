@@ -11,22 +11,23 @@ module Diffaroo
     def self.match_recursively(match_set, node1)
       return if match_set.match(node1)
       sig1       = match_set.signature1.signature(node1) # assumes node1 is in signature1
-      candidates = match_set.signature2.nodes(sig1)
+      candidates = match_set.signature2.nodes(sig1) || []
+      candidates.reject! { |node| match_set.match(node) }
 
-      if candidates
+      if candidates.empty?
+        node1.children.each do |child|
+          match_recursively(match_set, child)
+        end
+        if match = match_set.match(node1)
+          downward_match(match.pair.first, match.pair.last, match_set)
+        end
+      else
         upward_matches = candidates.collect do |node2|
           upward_match(node1, node2, match_depth(node2, match_set.signature2))
         end
         longest_trail = upward_matches.max { |a, b| a.length <=> b.length }
         longest_trail.each do |ancestral_match|
           match_set.add ancestral_match
-        end
-      else
-        node1.children.each do |child|
-          match_recursively(match_set, child)
-        end
-        if match = match_set.match(node1)
-          downward_match(match.pair.first, match.pair.last, match_set)
         end
       end
     end
