@@ -1,48 +1,42 @@
 # -*-org-*-
 Diffaroo TODO
 
-* write integration test for modify
-* change API to specify HTML or XML
-
-* classes?
-  - Signature: calculate and persist signatures and weights for nodes in a single document
-  - Match:     represents a match between two nodes
-  - MatchSet:  composed of Signatures and Matches.
-  - Matcher:   an algorithm that operates on a MatchSet statelessly to generate matches.
-  - Generator: generates a DeltaSet from a MatchSet
-  - Delta:     an atomic change step
-  - DeltaSet:  an ordered set of Deltas
-  - Apply:     f(doc1, DeltaSet) -> doc2
-* gemspec params
-* license
-* rdocs
-* readme
-* gemcutter
-* pick a hashing algorithm
-  - ruby hash / md5 / sha1
-  - benchmark? collision rate?
-* build an rspec matcher for xml
-* build a test/unit assertion for xml
-* Signature should have methods and not raw hash accessors
-* MatchSet#complement needs to be O(1) not O(nmatches)
-* matchers should be idempotent -- skip nodes if they are already matched
-* algorithmic notes
-*** ignoring ID
-    - too many web sites fuck that up
-    - libxml2 allows duplicate ids
-    - algorithm would ignore changed content (I think?)
-*** indexes (ascendant lookahead) needs to be implemented?
-*** if we do "phase 3" in weight-order, and recursively match parents, can't we avoid the "propagate to parent" step of phase 4?
-* delta
-- modify:
-    node1: \#<Nokogiri::XML::Element:...>
-    node2: \#<Nokogiri::XML::Element:...>
-    attributes: |-
-      + foo="bar"
-      - foo="bazz"
-- insert:
-    node2: \#<Nokogiri::XML::Element:...>
-- delete:
-    node1: \#<Nokogiri::XML::Element:...>
-* try to make the code independent of the tree we're diffing
-  think about diffing any tree, e.g. AST, YAML
+* gem
+*** gemspec
+*** license
+*** gemcutter
+* docs
+*** rdocs
+*** readme
+*** class description notes
+    - Signature: calculate and persist signatures and weights for nodes in a single document
+    - Match:     represents a match between two nodes
+    - MatchSet:  composed of Signatures and Matches.
+    - Matcher:   an algorithm that operates on a MatchSet statelessly to generate matches.
+    - Generator: generates a DeltaSet from a MatchSet
+    - Delta:     an atomic change step
+    - DeltaSet:  an ordered set of Deltas
+    - Apply:     f(doc1, DeltaSet) -> doc2
+*** algorithmic notes
+***** ignoring ID
+      - too many web sites fuck that up
+      - libxml2 allows duplicate ids
+      - algorithm would ignore changed content
+***** indexes (ascendant lookahead) needs to be implemented?
+***** if we do "phase 3" in weight-order, and recursively match parents, can't we avoid the "propagate to parent" step of phase 4?
+* core
+*** special-case text children. try hard to make text changes a MOD, and not INS/DEL
+*** write integration test for MODIFY delta
+*** write integration test for DELETE delta
+*** spec out MODIFY-with-move delta (with integration test)
+*** change API to specify HTML or XML
+*** pick a hashing algorithm
+    - ruby hash / md5 / sha1
+    - benchmark? collision rate?
+*** Signature should have methods and not raw hash accessors
+* additional
+*** build an rspec matcher for xml
+*** build a test/unit assertion for xml
+*** try to make the code independent of the tree we're diffing
+    think about diffing any tree, e.g. AST, YAML
+*** benchmark suite so we can try different algorithms
