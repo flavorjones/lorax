@@ -53,4 +53,17 @@ describe Diffaroo do
       round_trip_should_succeed doc1, doc2
     end
   end
+
+  context "deleted nodes" do
+    it "handles deleting nodes" do
+      doc1 = xml { root {
+          a1 "hello"
+          a2 "goodbye"
+        } }
+      doc2 = xml { root {
+          a1 "hello"
+        } }
+      round_trip_should_succeed doc1, doc2
+    end
+  end
 end
