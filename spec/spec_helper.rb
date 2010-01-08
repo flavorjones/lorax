@@ -22,13 +22,15 @@ module XmlBuilderHelper
   end
 
   def assert_perfect_match_exists(match_set, node1, node2)
-    (match = match_set.match(node1)).should_not be_nil
+    match = match_set.match(node1)
+    fail "#{node1.inspect} was not matched" if match.nil?
     match.other(node1).should == node2
     match.should be_perfect
   end
 
   def assert_forced_match_exists(match_set, node1, node2)
-    (match = match_set.match(node1)).should_not be_nil
+    match = match_set.match(node1)
+    fail "#{node1.inspect} was not matched" if match.nil?
     match.other(node1).should == node2
     match.should_not be_perfect
   end
