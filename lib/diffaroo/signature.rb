@@ -3,6 +3,7 @@ require 'digest/sha1'
 module Diffaroo
   class Signature
     SEP = "\0"
+    attr_accessor :signatures
 
     def initialize(node=nil)
       @signatures = {} # node      => signature

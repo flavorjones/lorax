@@ -25,6 +25,15 @@ describe Diffaroo::Signature do
     end
   end
 
+  describe "#signatures" do
+    it "returns the signatures hash, primarily for testing purposes" do
+      doc = xml { root { a1 } }
+      node = doc.at_css("a1")
+      signature = Diffaroo::Signature.new(node)
+      signature.signatures[node].should == signature.signature(node)
+    end
+  end
+
   describe "#root" do
     it "returns the subtree root" do
       doc = xml { root { a1 "hello" } }
