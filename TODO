@@ -25,15 +25,13 @@ Diffaroo TODO
 ***** indexes (ascendant lookahead) needs to be implemented?
 ***** if we do "phase 3" in weight-order, and recursively match parents, can't we avoid the "propagate to parent" step of phase 4?
 * core
-*** special-case text children. try hard to make text changes a MOD, and not INS/DEL
 *** write integration test for MODIFY delta
 *** write integration test for DELETE delta
 *** spec out MODIFY-with-move delta (with integration test)
-*** change API to specify HTML or XML
+*** change API to specify HTML or XML. or should we make user pass in Nokogirified docs?
 *** pick a hashing algorithm
     - ruby hash / md5 / sha1
     - benchmark? collision rate?
-*** Signature should have methods and not raw hash accessors
 * additional
 *** build an rspec matcher for xml
 *** build a test/unit assertion for xml

@@ -2,16 +2,26 @@
 
 require "diffaroo"
 
-delta = Diffaroo.diff(File.read(ARGV[0]), File.read(ARGV[1]))
-summary = delta.deltas.map do |d|
+delta_set = Diffaroo.diff(File.read(ARGV[0]), File.read(ARGV[1]))
+summary = delta_set.deltas.map do |d|
   if d.is_a?(Diffaroo::InsertDelta)
     [:insert, d.xpath, d.position, d.node.name, d.node.to_html]
   elsif d.is_a?(Diffaroo::DeleteDelta)
     [:delete, d.node.path, d.node.name, d.node.to_html]
   else
-    [:modify, d.node1.path, d.node1.name, d.node1.attributes.map{|k,v| [k, v.value]},
-              d.node2.path, d.node2.name, d.node2.attributes.map{|k,v| [k, v.value]} ]
+    if d.node1.text?
+      [:modify, d.node1.path, d.node1.content,
+                d.node2.path, d.node2.content]
+    else
+      [:modify, d.node1.path, d.node1.name, d.node1.attributes.map{|k,v| [k, v.value]},
+                d.node2.path, d.node2.name, d.node2.attributes.map{|k,v| [k, v.value]} ]
+    end
   end
 end
 
-puts summary.to_yaml
+File.open("foo.yml",  "w+") {  |f| f.puts summary.to_yaml }
+File.open("foo.html", "w+") do |f|
+  doc = Nokogiri::HTML File.read(ARGV[0])
+  delta_set.apply!(doc)
+  f.puts doc.to_html
+end
