@@ -120,6 +120,55 @@ describe Diffaroo::FastMatcher do
         assert_forced_match_exists  match_set, doc1.at_css("b3"), doc2.at_css("b3")
         assert_forced_match_exists  match_set, doc1.at_css("b4"), doc2.at_css("b4")
       end
+
+      it "force matches recursively" do
+        doc1 = xml { root { a1 ; a2 { b2 "hello" } } }
+        doc2 = xml { root { a1 ; a2 { b2 "goodbye" } } }
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
+        assert_perfect_match_exists match_set, doc1.at_css("a1"), doc2.at_css("a1")
+        assert_forced_match_exists  match_set, doc1.at_css("a2"), doc2.at_css("a2")
+        assert_forced_match_exists  match_set, doc1.at_css("b2"), doc2.at_css("b2")
+        assert_forced_match_exists  match_set, doc1.at_xpath("//b2/text()"), doc2.at_xpath("//b2/text()")
+      end
+
+      it "should match uniquely-named unmatched children" do
+        doc1 = xml { root {
+            a1 {
+              text "hello"
+              b1 "foo"
+              text "goodbye"
+            }
+          } }
+        doc2 = xml { root {
+            a1 {
+              text "halloo"
+              b1 "foo"
+              text "goodbye"
+            }
+          } }
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
+        assert_forced_match_exists match_set, doc1.at_xpath("/root/a1/text()[1]"), doc2.at_xpath("/root/a1/text()[1]")
+      end
+
+      it "should match same-named children in the same position, even if they are not uniquely named" do
+        doc1 = xml { root {
+            a1 {
+              text "hello"
+              b1 "foo"
+              text "goodbye"
+            }
+          } }
+        doc2 = xml { root {
+            a1 {
+              text "bonjour"
+              b1 "foo"
+              text "au revoir"
+            }
+          } }
+        match_set = Diffaroo::FastMatcher.match(doc1, doc2)
+        assert_forced_match_exists match_set, doc1.at_xpath("/root/a1/text()[1]"), doc2.at_xpath("/root/a1/text()[1]")
+        assert_forced_match_exists match_set, doc1.at_xpath("/root/a1/text()[2]"), doc2.at_xpath("/root/a1/text()[2]")
+      end
     end
 
     it "large subtree matches force more parent matches than smaller subtree matches" do
