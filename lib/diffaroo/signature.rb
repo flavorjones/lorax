@@ -3,7 +3,6 @@ require 'digest/sha1'
 module Diffaroo
   class Signature
     SEP = "\0"
-    attr_accessor :signatures
 
     def initialize(node=nil)
       @signatures = {} # node      => signature
@@ -74,6 +73,15 @@ module Diffaroo
       return @monograms[node] if @monograms.key?(node)
       signature(node)
       @monograms[node]
+    end
+
+    def set_signature(node, value) # :nodoc: for testing
+      (@nodes[value] ||= []) << node
+      @signatures[node]      =  value
+    end
+
+    def set_weight(node, value) # :nodoc: for testing
+      @weights[node] = value
     end
 
     private

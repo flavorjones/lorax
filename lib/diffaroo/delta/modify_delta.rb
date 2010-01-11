@@ -11,7 +11,7 @@ module Diffaroo
       node = doc.at_xpath(node1.path)
       raise NodeNotFoundError, xpath unless node
 
-      if node.text?
+      if node.text? || node.type == Nokogiri::XML::Node::CDATA_SECTION_NODE
         node.content = node2.content
       else
         attributes = attributes_hash(node)

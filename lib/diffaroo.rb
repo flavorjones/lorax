@@ -20,7 +20,7 @@ module Diffaroo
     doc1      = documentize string_or_io_or_nokogiridoc_1
     doc2      = documentize string_or_io_or_nokogiridoc_2
 
-    Diffaroo::FastMatcher.match(doc1, doc2).to_delta_set
+    Diffaroo::FastMatcher.new(doc1, doc2).match.to_delta_set
   end
 
   private

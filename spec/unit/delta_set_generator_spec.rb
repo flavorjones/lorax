@@ -81,7 +81,7 @@ describe Diffaroo::DeltaSetGenerator do
           delta_set = Diffaroo::DeltaSetGenerator.generate_delta_set(match_set)
           delta_set.deltas.select { |d| d.is_a?(Diffaroo::InsertDelta) }.length.should == 1 # a3
           delta_set.deltas.select { |d| d.is_a?(Diffaroo::ModifyDelta) }.length.should == 1 # a4
-          # delta_set.deltas.select { |d| d.is_a?(Diffaroo::DeleteDelta) }.length.should == 1 # a1 # TODO
+          delta_set.deltas.select { |d| d.is_a?(Diffaroo::DeleteDelta) }.length.should == 1 # a1
         end
       end
 

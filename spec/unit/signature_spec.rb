@@ -25,15 +25,6 @@ describe Diffaroo::Signature do
     end
   end
 
-  describe "#signatures" do
-    it "returns the signatures hash, primarily for testing purposes" do
-      doc = xml { root { a1 } }
-      node = doc.at_css("a1")
-      signature = Diffaroo::Signature.new(node)
-      signature.signatures[node].should == signature.signature(node)
-    end
-  end
-
   describe "#root" do
     it "returns the subtree root" do
       doc = xml { root { a1 "hello" } }
@@ -63,6 +54,28 @@ describe Diffaroo::Signature do
       node     = doc.at_css("a1")
       doc_sig  = Diffaroo::Signature.new(doc.root)
       doc_sig.size.should == 3 # root, a1, hello
+    end
+  end
+
+  describe "#set_signature" do
+    it "assigns values such that signature and nodes return the proper thing" do
+      signature = Diffaroo::Signature.new
+      signature.set_signature(:foo, "a")
+      signature.set_signature(:bar, "a")
+      signature.set_signature(:bazz, "b")
+      signature.signature(:foo).should == "a"
+      signature.signature(:bar).should == "a"
+      signature.signature(:bazz).should == "b"
+      signature.nodes("a").should =~ [:foo, :bar]
+      signature.nodes("b").should == [:bazz]
+    end
+  end
+
+  describe "#set_weight" do
+    it "assigns values such that weight returns the proper thing" do
+      signature = Diffaroo::Signature.new
+      signature.set_weight(:foo, 2.2)
+      signature.weight(:foo).should == 2.2
     end
   end
 

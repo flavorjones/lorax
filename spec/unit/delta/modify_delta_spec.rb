@@ -22,7 +22,7 @@ describe Diffaroo::ModifyDelta do
   end
 
   describe "#apply!" do
-    context "element nod" do
+    context "element node" do
       context "when attributes differ" do
         it "should set the attributes properly" do
           doc1 = xml { root { a1(:foo => :bar) } }
@@ -40,10 +40,6 @@ describe Diffaroo::ModifyDelta do
           node3["once"].should == "twice"
         end
       end
-
-      context "when positions differ" do
-        it "should do something"
-      end
     end
 
     context "text node" do
@@ -57,6 +53,10 @@ describe Diffaroo::ModifyDelta do
 
         doc3.root.content.should == "goodbye"
       end
+    end
+
+    context "when positions differ" do
+      it "should move the node"
     end
   end
 end
