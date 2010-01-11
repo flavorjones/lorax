@@ -9,8 +9,8 @@ summary = delta_set.deltas.map do |d|
   elsif d.is_a?(Diffaroo::DeleteDelta)
     [:delete, d.node.path, d.node.name, d.node.to_html]
   else
-    if d.node1.text?
-      [:modify, d.node1.path, d.node1.content,
+    if d.node1.text? || d.node1.type == Nokogiri::XML::Node::CDATA_SECTION_NODE
+      [:modify_text, d.node1.path, d.node1.content,
                 d.node2.path, d.node2.content]
     else
       [:modify, d.node1.path, d.node1.name, d.node1.attributes.map{|k,v| [k, v.value]},
