@@ -5,6 +5,17 @@ module Diffaroo
     def apply!(document)
       raise NotImplementedError, self.class.to_s
     end
+
+    private
+
+    def insert_node(node, parent, position)
+      children = parent.children
+      if children.empty? || position >= children.length
+        parent << node.dup
+      else
+        children[position].add_previous_sibling(node.dup)
+      end
+    end
   end
 end
 

@@ -56,7 +56,35 @@ describe Diffaroo::ModifyDelta do
     end
 
     context "when positions differ" do
-      it "should move the node"
+      it "should move the node" do
+        doc1 = xml { root {
+            a1 { b1 }
+            a2
+          } }
+        doc2 = xml { root {
+            a1
+            a2 { b1 }
+          } }
+        delta = Diffaroo::ModifyDelta.new(doc1.at_css("b1"), doc2.at_css("b1"))
+        doc3 = doc1.dup
+        delta.apply!(doc3)
+        doc3.at_xpath("/root/a2/b1").should_not be_nil
+      end
+
+      it "should move the node to the correct position" do
+        doc1 = xml { root {
+            a1 { b2 }
+            a2 { b1 ; b3 }
+          } }
+        doc2 = xml { root {
+            a1
+            a2 { b1 ; b2 ; b3 }
+          } }
+        delta = Diffaroo::ModifyDelta.new(doc1.at_css("b2"), doc2.at_css("b2"))
+        doc3 = doc1.dup
+        delta.apply!(doc3)
+        doc3.at_xpath("/root/a2/*[2]").name.should == "b2"
+      end
     end
   end
 end

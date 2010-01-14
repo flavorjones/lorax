@@ -12,12 +12,7 @@ module Diffaroo
       # TODO: patch nokogiri to make inserting node copies efficient
       parent = document.at_xpath(xpath)
       raise NodeNotFoundError, xpath unless parent
-      children = parent.children
-      if children.empty? || position >= children.length
-        parent << node.dup
-      else
-        children[position].add_previous_sibling(node.dup)
-      end
+      insert_node(node.dup, parent, position)
     end
   end
 end

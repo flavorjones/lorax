@@ -9,7 +9,7 @@ module Diffaroo
 
     def apply!(doc)
       node = doc.at_xpath(node1.path)
-      raise NodeNotFoundError, xpath unless node
+      raise NodeNotFoundError, node1.path unless node
 
       if node.text? || node.type == Nokogiri::XML::Node::CDATA_SECTION_NODE
         node.content = node2.content
@@ -20,6 +20,14 @@ module Diffaroo
           attributes .each { |name, value| node.remove_attribute(name) }
           attributes2.each { |name, value| node[name] = value }
         end
+      end
+
+      if node1.path != node2.path
+        position = node2.parent.children.index(node2)
+        target_parent = doc.at_xpath(node2.parent.path)
+        raise NodeNotFoundError, node2.parent.path unless target_parent
+        node.unlink
+        insert_node(node, target_parent, position)
       end
     end
 
