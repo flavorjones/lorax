@@ -27,7 +27,7 @@ Diffaroo TODO
 * core
 *** write integration test for MODIFY delta
 *** write integration test for DELETE delta
-*** spec out MODIFY-with-move delta (with integration test)
+*** write integration test for MODIFY delta with move
 *** change API to specify HTML or XML. or should we make user pass in Nokogirified docs?
 *** pick a hashing algorithm
     - ruby hash / md5 / sha1

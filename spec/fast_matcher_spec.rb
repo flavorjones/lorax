@@ -65,7 +65,7 @@ describe Diffaroo::FastMatcher do
     end
 
     context "sibling matches" do
-      it "matches all siblings" do
+      it "matches all identical siblings" do
         doc1 = xml { root {
             a1_1 ; a1_3 ; a1_5
           } }
@@ -200,21 +200,17 @@ describe Diffaroo::FastMatcher do
 
       it "should match uniquely-named unmatched children" do
         doc1 = xml { root {
-            a1 {
-              text "hello"
-              b1 "foo"
-              text "goodbye"
-            }
+            a1 "hello"
+            a2 "goodbye"
+            a3 "natch"
           } }
         doc2 = xml { root {
-            a1 {
-              text "halloo"
-              b1 "foo"
-              text "goodbye"
-            }
+            a1 "hello"
+            a3 "not"
           } }
         match_set = Diffaroo::FastMatcher.new(doc1, doc2).match
-        assert_forced_match_exists match_set, doc1.at_xpath("/root/a1/text()[1]"), doc2.at_xpath("/root/a1/text()[1]")
+        assert_perfect_match_exists match_set, doc1.at_css("a1"), doc2.at_css("a1")
+        assert_forced_match_exists match_set,  doc1.at_css("a3"), doc2.at_css("a3")
       end
 
       it "should match same-named children in the same position, even if they are not uniquely named" do

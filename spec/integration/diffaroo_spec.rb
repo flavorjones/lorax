@@ -8,10 +8,11 @@ describe Diffaroo do
     unless Diffaroo::Signature.new(new_doc.root).signature == Diffaroo::Signature.new(doc2.root).signature
       errmsg = []
       errmsg << "Documents are not identical after a round-trip diff and patch:"
-      errmsg << "=> patch: #{delta_set.deltas.inspect}"
-      errmsg << new_doc.root.to_xml
+      errmsg << doc1.root.to_xml
       errmsg << "-----"
       errmsg << doc2.root.to_xml
+      errmsg << "=> patch: #{delta_set.deltas.inspect}"
+      errmsg << new_doc.root.to_xml
       fail errmsg.join("\n")
     end
   end
@@ -59,9 +60,44 @@ describe Diffaroo do
       doc1 = xml { root {
           a1 "hello"
           a2 "goodbye"
+          a3 "natch"
         } }
       doc2 = xml { root {
           a1 "hello"
+          a3 "natch"
+        } }
+      round_trip_should_succeed doc1, doc2
+    end
+  end
+
+  context "modified nodes" do
+    it "handles modifying nodes" do
+      doc1 = xml { root {
+          a1 "hello"
+          a2 "goodbye"
+          a3 "natch"
+        } }
+      doc2 = xml { root {
+          a1 "hello"
+          a2 "good buy"
+          a3 "natch"
+        } }
+      round_trip_should_succeed doc1, doc2
+    end
+  end
+
+  context "mixed operations" do
+    it "handles mixed deletions and modifications" do
+      doc1 = xml { root {
+          a1 "hello"
+          a2 "goodbye"
+          a3 "natch"
+          a4 "jimmy"
+        } }
+      doc2 = xml { root {
+          a1 "hello"
+          a3 "not"
+          a4 "jimmy"
         } }
       round_trip_should_succeed doc1, doc2
     end

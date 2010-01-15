@@ -73,11 +73,16 @@ module Diffaroo
       children_set1.each do |name1, children1|
         children_set2.each do |name2, children2|
           next unless name1 == name2
-          children1.each do |child1|
-            children2.each do |child2|
-              if node1.children.index(child1) == node2.children.index(child2)
-                match_set.add Match.new(child1, child2)
-                propagate_to_children(child1, child2)
+          if children1.length == 1 && children2.length == 1
+            match_set.add Match.new(children1.first, children2.first)
+            propagate_to_children children1.first, children2.first
+          else
+            children1.each do |child1|
+              children2.each do |child2|
+                if node1.children.index(child1) == node2.children.index(child2)
+                  match_set.add Match.new(child1, child2)
+                  propagate_to_children child1, child2
+                end
               end
             end
           end
