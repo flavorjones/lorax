@@ -11,5 +11,9 @@ module Diffaroo
       raise NodeNotFoundError, xpath unless target
       target.unlink
     end
+
+    def descriptor
+      [:delete, {:xpath => node.path, :content => node.to_s}]
+    end
   end
 end

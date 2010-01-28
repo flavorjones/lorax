@@ -14,5 +14,9 @@ module Diffaroo
       raise NodeNotFoundError, xpath unless parent
       insert_node(node.dup, parent, position)
     end
+
+    def descriptor
+      [:insert, {:xpath => xpath, :position => position, :content => node.to_s}]
+    end
   end
 end

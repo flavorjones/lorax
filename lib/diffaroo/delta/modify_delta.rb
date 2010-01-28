@@ -31,6 +31,16 @@ module Diffaroo
       end
     end
 
+    def descriptor
+      if node1.text? || node1.type == Nokogiri::XML::Node::CDATA_SECTION_NODE
+        [:modify, {:old => {:xpath => node1.path, :content => node1.to_s},
+                   :new => {:xpath => node2.path, :content => node2.to_s}}]
+      else
+        [:modify, {:old => {:xpath => node1.path, :name => node1.name, :attributes => node1.attributes.map{|k,v| [k, v.value]}},
+                   :new => {:xpath => node2.path, :name => node2.name, :attributes => node2.attributes.map{|k,v| [k, v.value]}}}]
+      end
+    end
+
     private
 
     def attributes_hash(node)

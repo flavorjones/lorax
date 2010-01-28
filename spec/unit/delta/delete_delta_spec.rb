@@ -43,4 +43,8 @@ describe Diffaroo::DeleteDelta do
       end
     end
   end
+
+  describe "#descriptor" do
+    it "needs a spec"
+  end
 end

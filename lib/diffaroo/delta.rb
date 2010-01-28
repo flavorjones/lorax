@@ -6,6 +6,10 @@ module Diffaroo
       raise NotImplementedError, self.class.to_s
     end
 
+    def inspect
+      "#<#{self.class.name}:#{sprintf("0x%x", object_id)} #{descriptor.inspect}>"
+    end
+
     private
 
     def insert_node(node, parent, position)
