@@ -108,18 +108,20 @@ describe Diffaroo do
       doc1 = xml { root {
           a1
           text "\n\n"
-          a2
+          a4
           text "\n\n"
-          a3
+          a5
         } }
       doc2 = xml { root {
           a1
           text "\n\n"
-          a10
-          text "\n\n"
           a2
           text "\n\n"
           a3
+          text "\n\n"
+          a4
+          text "\n\n"
+          a5
         } }
       round_trip_should_succeed doc1, doc2
     end
