@@ -102,4 +102,27 @@ describe Diffaroo do
       round_trip_should_succeed doc1, doc2
     end
   end
+
+  context "with whitespace interleaved" do
+    it "handles whitespace nodes" do
+      doc1 = xml { root {
+          a1
+          text "\n\n"
+          a2
+          text "\n\n"
+          a3
+        } }
+      doc2 = xml { root {
+          a1
+          text "\n\n"
+          a10
+          text "\n\n"
+          a2
+          text "\n\n"
+          a3
+        } }
+      round_trip_should_succeed doc1, doc2
+    end
+  end
+
 end
