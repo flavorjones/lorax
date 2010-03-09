@@ -1,11 +1,11 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe Diffaroo do
+describe Lorax do
   def round_trip_should_succeed(doc1, doc2)
-    delta_set = Diffaroo.diff(doc1, doc2)
+    delta_set = Lorax.diff(doc1, doc2)
     new_doc   = delta_set.apply(doc1)
 
-    unless Diffaroo::Signature.new(new_doc.root).signature == Diffaroo::Signature.new(doc2.root).signature
+    unless Lorax::Signature.new(new_doc.root).signature == Lorax::Signature.new(doc2.root).signature
       errmsg = []
       errmsg << "Documents are not identical after a round-trip diff and patch:"
       errmsg << doc1.root.to_xml

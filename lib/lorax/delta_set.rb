@@ -1,4 +1,4 @@
-module Diffaroo
+module Lorax
   class DeltaSet
     attr_accessor :deltas
 

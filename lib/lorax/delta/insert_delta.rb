@@ -1,4 +1,4 @@
-module Diffaroo
+module Lorax
   class InsertDelta < Delta
     attr_accessor :node, :xpath, :position
 

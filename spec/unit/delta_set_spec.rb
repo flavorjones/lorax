@@ -1,9 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe Diffaroo::DeltaSet do
+describe Lorax::DeltaSet do
   describe "#add / #deltas" do
     it "appends to and returns an ordered list of deltas" do
-      delta_set = Diffaroo::DeltaSet.new
+      delta_set = Lorax::DeltaSet.new
       delta_set.add :foo
       delta_set.add :bar
       delta_set.deltas.should == [:foo, :bar]
@@ -12,7 +12,7 @@ describe Diffaroo::DeltaSet do
 
   describe "#apply" do
     it "calls apply! on a duplicate document" do
-      delta_set = Diffaroo::DeltaSet.new
+      delta_set = Lorax::DeltaSet.new
       document  = Nokogiri::XML::Document.new
       mock(document).dup { :foo }
       mock(delta_set).apply!(:foo)
@@ -23,9 +23,9 @@ describe Diffaroo::DeltaSet do
   describe "#apply!" do
     it "invokes apply! on each delta in order" do
       doc = xml { root }
-      delta_set = Diffaroo::DeltaSet.new
-      delta1 = Diffaroo::InsertDelta.new(:foo, :bar, :quux)
-      delta2 = Diffaroo::InsertDelta.new(:foo, :bar, :quux)
+      delta_set = Lorax::DeltaSet.new
+      delta1 = Lorax::InsertDelta.new(:foo, :bar, :quux)
+      delta2 = Lorax::InsertDelta.new(:foo, :bar, :quux)
       delta_set.add delta1
       delta_set.add delta2
 

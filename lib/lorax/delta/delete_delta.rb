@@ -1,4 +1,4 @@
-module Diffaroo
+module Lorax
   class DeleteDelta < Delta
     attr_accessor :node
 

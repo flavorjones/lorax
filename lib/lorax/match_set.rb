@@ -1,12 +1,12 @@
-module Diffaroo
+module Lorax
   class MatchSet
     attr_accessor :signature1, :signature2
 
     def initialize(doc1, doc2, dependency_injection={})
       @document1  = doc1
       @document2  = doc2
-      @signature1 = dependency_injection[:match_set_signature1] || Diffaroo::Signature.new(@document1.root)
-      @signature2 = dependency_injection[:match_set_signature2] || Diffaroo::Signature.new(@document2.root)
+      @signature1 = dependency_injection[:match_set_signature1] || Lorax::Signature.new(@document1.root)
+      @signature2 = dependency_injection[:match_set_signature2] || Lorax::Signature.new(@document2.root)
       @matches    = {}
     end
 

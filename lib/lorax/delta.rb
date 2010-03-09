@@ -1,4 +1,4 @@
-module Diffaroo
+module Lorax
   class Delta
     class NodeNotFoundError < RuntimeError ; end
 
@@ -23,6 +23,6 @@ module Diffaroo
   end
 end
 
-require "diffaroo/delta/insert_delta"
-require "diffaroo/delta/modify_delta"
-require "diffaroo/delta/delete_delta"
+require "lorax/delta/insert_delta"
+require "lorax/delta/modify_delta"
+require "lorax/delta/delete_delta"

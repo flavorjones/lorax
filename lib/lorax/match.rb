@@ -1,4 +1,4 @@
-module Diffaroo
+module Lorax
   class Match
     attr_accessor :pair
 

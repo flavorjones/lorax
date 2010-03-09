@@ -1,4 +1,4 @@
-module Diffaroo
+module Lorax
   class FastMatcher
     attr_accessor :match_set
 
@@ -92,7 +92,7 @@ module Diffaroo
 
     def depth(node, sig)
       depth = 1 + Math.log(sig.size) * sig.weight(node) / sig.weight
-      # puts "diffaroo: debug: #{__FILE__}:#{__LINE__}: depth #{depth} = 1 + #{Math.log(sig.size)} * #{sig.weight(node)} / #{sig.weight}"
+      # puts "lorax: debug: #{__FILE__}:#{__LINE__}: depth #{depth} = 1 + #{Math.log(sig.size)} * #{sig.weight(node)} / #{sig.weight}"
       depth.to_i
     end
 

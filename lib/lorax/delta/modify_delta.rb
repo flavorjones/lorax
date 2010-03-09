@@ -1,4 +1,4 @@
-module Diffaroo
+module Lorax
   class ModifyDelta < Delta
     attr_accessor :node1, :node2
 

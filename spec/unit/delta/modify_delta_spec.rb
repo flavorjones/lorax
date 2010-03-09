@@ -1,23 +1,23 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe Diffaroo::ModifyDelta do
+describe Lorax::ModifyDelta do
   describe ".new" do
     it "takes two arguments" do
-      proc { Diffaroo::ModifyDelta.new(:foo)             }.should     raise_error(ArgumentError)
-      proc { Diffaroo::ModifyDelta.new(:foo, :bar)       }.should_not raise_error(ArgumentError)
-      proc { Diffaroo::ModifyDelta.new(:foo, :bar, :quux)}.should     raise_error(ArgumentError)
+      proc { Lorax::ModifyDelta.new(:foo)             }.should     raise_error(ArgumentError)
+      proc { Lorax::ModifyDelta.new(:foo, :bar)       }.should_not raise_error(ArgumentError)
+      proc { Lorax::ModifyDelta.new(:foo, :bar, :quux)}.should     raise_error(ArgumentError)
     end
   end
 
   describe "#node1" do
     it "returns the first initializer parameter" do
-      Diffaroo::ModifyDelta.new(:foo, :bar).node1.should == :foo
+      Lorax::ModifyDelta.new(:foo, :bar).node1.should == :foo
     end
   end
 
   describe "#node2" do
     it "returns the first initializer parameter" do
-      Diffaroo::ModifyDelta.new(:foo, :bar).node2.should == :bar
+      Lorax::ModifyDelta.new(:foo, :bar).node2.should == :bar
     end
   end
 
@@ -32,7 +32,7 @@ describe Diffaroo::ModifyDelta do
           node2 = doc2.at_css("a1")
           node3 = doc3.at_css("a1")
 
-          delta = Diffaroo::ModifyDelta.new(node1, node2)
+          delta = Lorax::ModifyDelta.new(node1, node2)
           delta.apply!(doc3)
           
           node3["foo"].should be_nil
@@ -48,7 +48,7 @@ describe Diffaroo::ModifyDelta do
         doc2 = xml { root "goodbye" }
         doc3 = doc1.dup
 
-        delta = Diffaroo::ModifyDelta.new(doc1.root.children.first, doc2.root.children.first)
+        delta = Lorax::ModifyDelta.new(doc1.root.children.first, doc2.root.children.first)
         delta.apply!(doc3)
 
         doc3.root.content.should == "goodbye"
@@ -65,7 +65,7 @@ describe Diffaroo::ModifyDelta do
             a1
             a2 { b1 }
           } }
-        delta = Diffaroo::ModifyDelta.new(doc1.at_css("b1"), doc2.at_css("b1"))
+        delta = Lorax::ModifyDelta.new(doc1.at_css("b1"), doc2.at_css("b1"))
         doc3 = doc1.dup
         delta.apply!(doc3)
         doc3.at_xpath("/root/a2/b1").should_not be_nil
@@ -80,7 +80,7 @@ describe Diffaroo::ModifyDelta do
             a1
             a2 { b1 ; b2 ; b3 }
           } }
-        delta = Diffaroo::ModifyDelta.new(doc1.at_css("b2"), doc2.at_css("b2"))
+        delta = Lorax::ModifyDelta.new(doc1.at_css("b2"), doc2.at_css("b2"))
         doc3 = doc1.dup
         delta.apply!(doc3)
         doc3.at_xpath("/root/a2/*[2]").name.should == "b2"

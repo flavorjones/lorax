@@ -1,16 +1,16 @@
 require File.expand_path(File.dirname(__FILE__) + '/../../spec_helper')
 
-describe Diffaroo::DeleteDelta do
+describe Lorax::DeleteDelta do
   describe ".new" do
     it "takes one argument" do
-      proc { Diffaroo::DeleteDelta.new(:foo)      }.should_not raise_error(ArgumentError)
-      proc { Diffaroo::DeleteDelta.new(:foo, :bar)}.should     raise_error(ArgumentError)
+      proc { Lorax::DeleteDelta.new(:foo)      }.should_not raise_error(ArgumentError)
+      proc { Lorax::DeleteDelta.new(:foo, :bar)}.should     raise_error(ArgumentError)
     end
   end
 
   describe "#node" do
     it "returns the initalizer argument" do
-      Diffaroo::DeleteDelta.new(:foo).node.should == :foo
+      Lorax::DeleteDelta.new(:foo).node.should == :foo
     end
   end
 
@@ -20,7 +20,7 @@ describe Diffaroo::DeleteDelta do
         doc1 = xml { root { a1 } }
         doc2 = xml { root }
         node = doc1.at_css("a1")
-        delta = Diffaroo::DeleteDelta.new node
+        delta = Lorax::DeleteDelta.new node
 
         delta.apply!(doc1)
 
@@ -34,7 +34,7 @@ describe Diffaroo::DeleteDelta do
         doc1 = xml { root { a1 { b1 ; b2 "hello" } } }
         doc2 = xml { root }
         node = doc1.at_css("a1")
-        delta = Diffaroo::DeleteDelta.new node
+        delta = Lorax::DeleteDelta.new node
 
         delta.apply!(doc1)
 

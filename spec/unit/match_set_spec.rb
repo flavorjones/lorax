@@ -1,34 +1,34 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
-describe Diffaroo::MatchSet do
+describe Lorax::MatchSet do
   describe "#new" do
     context "normal usage" do
       it "takes two arguments" do
-        proc { Diffaroo::MatchSet.new(xml{root})            }.should     raise_error(ArgumentError)
-        proc { Diffaroo::MatchSet.new(xml{root}, xml{root}) }.should_not raise_error(ArgumentError)
+        proc { Lorax::MatchSet.new(xml{root})            }.should     raise_error(ArgumentError)
+        proc { Lorax::MatchSet.new(xml{root}, xml{root}) }.should_not raise_error(ArgumentError)
       end
 
       it "builds a Signature for each document root" do
         doc1 = xml { root1 }
         doc2 = xml { root2 }
-        mock.proxy(Diffaroo::Signature).new(doc1.root)
-        mock.proxy(Diffaroo::Signature).new(doc2.root)
-        Diffaroo::MatchSet.new(doc1, doc2)
+        mock.proxy(Lorax::Signature).new(doc1.root)
+        mock.proxy(Lorax::Signature).new(doc2.root)
+        Lorax::MatchSet.new(doc1, doc2)
       end
     end
 
     context "with dependency injection" do
       it "takes an optional third argument for dependency injection" do
-        proc { Diffaroo::MatchSet.new(xml{root}, xml{root}, {:foo => :bar}) }.should_not raise_error(ArgumentError)
+        proc { Lorax::MatchSet.new(xml{root}, xml{root}, {:foo => :bar}) }.should_not raise_error(ArgumentError)
       end
 
       it "will use the value of ':match_set_signature1' for @signature1" do
-        match_set = Diffaroo::MatchSet.new(xml{root}, xml{root}, {:match_set_signature1 => :foo})
+        match_set = Lorax::MatchSet.new(xml{root}, xml{root}, {:match_set_signature1 => :foo})
         match_set.signature1.should == :foo
       end
 
       it "will use the value of ':match_set_signature2' for @signature2" do
-        match_set = Diffaroo::MatchSet.new(xml{root}, xml{root}, {:match_set_signature2 => :foo})
+        match_set = Lorax::MatchSet.new(xml{root}, xml{root}, {:match_set_signature2 => :foo})
         match_set.signature2.should == :foo
       end
     end
@@ -38,7 +38,7 @@ describe Diffaroo::MatchSet do
     it "returns the Signature of the first document" do
       doc1 = xml { root1 }
       doc2 = xml { root2 }
-      match_set = Diffaroo::MatchSet.new(doc1, doc2)
+      match_set = Lorax::MatchSet.new(doc1, doc2)
       match_set.signature1.should_not be_nil
       match_set.signature1.root.should == doc1.root
     end
@@ -48,7 +48,7 @@ describe Diffaroo::MatchSet do
     it "returns the Signature of the second document" do
       doc1 = xml { root1 }
       doc2 = xml { root2 }
-      match_set = Diffaroo::MatchSet.new(doc1, doc2)
+      match_set = Lorax::MatchSet.new(doc1, doc2)
       match_set.signature2.should_not be_nil
       match_set.signature2.root.should == doc2.root
     end
@@ -58,12 +58,12 @@ describe Diffaroo::MatchSet do
     before do
       @doc1 = xml { root1 { a1 } }
       @doc2 = xml { root2 { a1 } }
-      @match_set = Diffaroo::MatchSet.new(@doc1, @doc2)
+      @match_set = Lorax::MatchSet.new(@doc1, @doc2)
     end
 
     context "when there is a match for the node" do
       before do
-        @match = Diffaroo::Match.new(@doc1.at_css("a1"), @doc2.at_css("a1"))
+        @match = Lorax::Match.new(@doc1.at_css("a1"), @doc2.at_css("a1"))
         @match_set.add @match
       end
 
@@ -85,8 +85,8 @@ describe Diffaroo::MatchSet do
     it "invokes DeltaSetGenerator.generate_delta_set on itself" do
       doc1 = xml { root1 }
       doc2 = xml { root2 }
-      match_set = Diffaroo::MatchSet.new(doc1, doc2)
-      mock(Diffaroo::DeltaSetGenerator).generate_delta_set(match_set)
+      match_set = Lorax::MatchSet.new(doc1, doc2)
+      mock(Lorax::DeltaSetGenerator).generate_delta_set(match_set)
       match_set.to_delta_set
     end
   end

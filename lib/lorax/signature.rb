@@ -1,6 +1,6 @@
 require 'digest/sha1'
 
-module Diffaroo
+module Lorax
   class Signature
     SEP = "\0"
 

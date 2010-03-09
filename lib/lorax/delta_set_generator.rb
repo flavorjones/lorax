@@ -1,4 +1,4 @@
-module Diffaroo
+module Lorax
   module DeltaSetGenerator
     def self.generate_delta_set match_set
       delta_set = DeltaSet.new
