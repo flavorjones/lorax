@@ -88,6 +88,49 @@ describe Lorax::FastMatcher do
         assert_perfect_match_exists match_set, doc1.at_css("a1_3"), doc2.at_css("a2_3")
         assert_perfect_match_exists match_set, doc1.at_css("a1_5"), doc2.at_css("a2_5")
       end
+
+      it "does something to whitespace siblings" do
+        doc1 = xml { root {
+            a1
+            text "\n\n"
+            a4
+            text "\n\n"
+            a5
+          } }
+        doc2 = xml { root {
+            a1
+            text "\n\n"
+            a2
+            text "\n\n"
+            a3
+            text "\n\n"
+            a4
+            text "\n\n"
+            a5
+          } }
+        signature1 = Diffaroo::Signature.new(doc1.root)
+        signature1.set_signature(doc1.root.children[0], "a1")
+        signature1.set_signature(doc1.root.children[1], "space")
+        signature1.set_signature(doc1.root.children[2], "a4")
+        signature1.set_signature(doc1.root.children[3], "space")
+        signature1.set_signature(doc1.root.children[4], "a5")
+
+        signature2 = Diffaroo::Signature.new(doc2.root)
+        signature2.set_signature(doc2.root.children[0], "a1")
+        signature2.set_signature(doc2.root.children[1], "space")
+        signature2.set_signature(doc2.root.children[2], "a2")
+        signature2.set_signature(doc2.root.children[3], "space")
+        signature2.set_signature(doc2.root.children[4], "a3")
+        signature2.set_signature(doc2.root.children[5], "space")
+        signature2.set_signature(doc2.root.children[6], "a4")
+        signature2.set_signature(doc2.root.children[7], "space")
+        signature2.set_signature(doc2.root.children[8], "a5")
+
+        match_set = Diffaroo::FastMatcher.new(doc1, doc2,
+          :match_set_signature1 => signature1, :match_set_signature2 => signature2).match
+        assert_perfect_match_exists match_set, doc1.root.children[1], doc2.root.children[1]
+        assert_perfect_match_exists match_set, doc1.root.children[3], doc2.root.children[3]
+      end
     end
 
     context "matching children of an unmatched node" do
