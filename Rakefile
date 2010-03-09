@@ -6,7 +6,7 @@ require 'hoe'
 
 Hoe.plugin :git
 
-Hoe.spec 'mcbean' do
+Hoe.spec 'lorax' do
   developer "Mike Dalessio", "mike.dalessio@gmail.com"
 
   self.extra_rdoc_files = FileList["*.rdoc"]
