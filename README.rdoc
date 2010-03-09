@@ -15,6 +15,8 @@ generates deltas in less than O(n * log n) time, accepting some
 tradeoffs in the size of the delta set. You can find his paper at
 http://gregory.cobena.free.fr/www/Publications/thesis.html.
 
+"I am the Lorax, I speak for the trees."
+
 == Features / Problems
 
 * Detect differences between documents, or tell whether two documents are the same.
