@@ -70,15 +70,15 @@ describe Lorax::DeltaSetGenerator do
             text "\n\n"
             a5
           } }
-        match_set = Diffaroo::MatchSet.new doc1, doc2
-        match_set.add Diffaroo::Match.new(doc1.at_css("root"), doc2.at_css("root"))
-        match_set.add Diffaroo::Match.new(doc1.at_css("a1"), doc2.at_css("a1"), :perfect => true)
-        match_set.add Diffaroo::Match.new(doc1.at_css("a4"), doc2.at_css("a4"), :perfect => true)
-        match_set.add Diffaroo::Match.new(doc1.at_css("a5"), doc2.at_css("a5"), :perfect => true)
-        match_set.add Diffaroo::Match.new(doc1.at_xpath("/root/text()[1]"), doc2.at_xpath("/root/text()[1]"), :perfect => true)
-        match_set.add Diffaroo::Match.new(doc1.at_xpath("/root/text()[2]"), doc2.at_xpath("/root/text()[2]"), :perfect => true)
+        match_set = Lorax::MatchSet.new doc1, doc2
+        match_set.add Lorax::Match.new(doc1.at_css("root"), doc2.at_css("root"))
+        match_set.add Lorax::Match.new(doc1.at_css("a1"), doc2.at_css("a1"), :perfect => true)
+        match_set.add Lorax::Match.new(doc1.at_css("a4"), doc2.at_css("a4"), :perfect => true)
+        match_set.add Lorax::Match.new(doc1.at_css("a5"), doc2.at_css("a5"), :perfect => true)
+        match_set.add Lorax::Match.new(doc1.at_xpath("/root/text()[1]"), doc2.at_xpath("/root/text()[1]"), :perfect => true)
+        match_set.add Lorax::Match.new(doc1.at_xpath("/root/text()[2]"), doc2.at_xpath("/root/text()[2]"), :perfect => true)
 
-        delta_set = Diffaroo::DeltaSetGenerator.generate_delta_set(match_set)
+        delta_set = Lorax::DeltaSetGenerator.generate_delta_set(match_set)
         puts delta_set.deltas.inspect
         false.should be_true
       end

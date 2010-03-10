@@ -108,14 +108,14 @@ describe Lorax::FastMatcher do
             text "\n\n"
             a5
           } }
-        signature1 = Diffaroo::Signature.new(doc1.root)
+        signature1 = Lorax::Signature.new(doc1.root)
         signature1.set_signature(doc1.root.children[0], "a1")
         signature1.set_signature(doc1.root.children[1], "space")
         signature1.set_signature(doc1.root.children[2], "a4")
         signature1.set_signature(doc1.root.children[3], "space")
         signature1.set_signature(doc1.root.children[4], "a5")
 
-        signature2 = Diffaroo::Signature.new(doc2.root)
+        signature2 = Lorax::Signature.new(doc2.root)
         signature2.set_signature(doc2.root.children[0], "a1")
         signature2.set_signature(doc2.root.children[1], "space")
         signature2.set_signature(doc2.root.children[2], "a2")
@@ -126,7 +126,7 @@ describe Lorax::FastMatcher do
         signature2.set_signature(doc2.root.children[7], "space")
         signature2.set_signature(doc2.root.children[8], "a5")
 
-        match_set = Diffaroo::FastMatcher.new(doc1, doc2,
+        match_set = Lorax::FastMatcher.new(doc1, doc2,
           :match_set_signature1 => signature1, :match_set_signature2 => signature2).match
         assert_perfect_match_exists match_set, doc1.root.children[1], doc2.root.children[1]
         assert_perfect_match_exists match_set, doc1.root.children[3], doc2.root.children[3]
