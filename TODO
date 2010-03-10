@@ -1,13 +1,8 @@
 # -*-org-*-
-Diffaroo TODO
+Lorax TODO
 
-* gem
-*** gemspec
-*** license
-*** gemcutter
 * docs
 *** rdocs
-*** readme
 *** class description notes
     - Signature: calculate and persist signatures and weights for nodes in a single document
     - Match:     represents a match between two nodes
