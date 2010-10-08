@@ -5,6 +5,7 @@ gem 'hoe', '>= 2.5.0'
 require 'hoe'
 
 Hoe.plugin :git
+Hoe.plugin :gemspec
 
 Hoe.spec 'lorax' do
   developer "Mike Dalessio", "mike.dalessio@gmail.com"
