@@ -19,7 +19,7 @@ module Lorax
     end
 
     def nodes(sig=nil)
-      sig ? @nodes[sig] : @node
+      sig ? @nodes[sig] : [@node]
     end
 
     def size
@@ -30,12 +30,19 @@ module Lorax
       return @signatures[node] if @signatures.key?(node)
       raise ArgumentError, "signature expects a Node, but received #{node.inspect}" unless node.is_a?(Nokogiri::XML::Node)
 
-      if node.text? || node.cdata? || node.comment?
+      if node.text?
+        content = node.content.strip
+        if content.empty?
+          return nil
+        else
+          monogram     = signature = hashify(content)
+        end
+      elsif node.cdata? || node.comment?
         monogram     = signature = hashify(node.content)
       elsif node.type == Nokogiri::XML::Node::ENTITY_REF_NODE
         monogram     = signature = hashify(node.to_html)
       elsif node.element?
-        children_sig = hashify(node.children       .collect { |child| signature(child) })
+        children_sig = hashify(node.children       .collect { |child| signature(child) }.compact)
         attr_sig     = hashify(node.attributes.sort.collect { |k,v|   [k, v.value]     }.flatten)
         monogram     = hashify(node.name, attr_sig)
         signature    = hashify(node.name, attr_sig, children_sig)
@@ -55,16 +62,22 @@ module Lorax
       return @weights[node] if @weights.key?(node)
       raise ArgumentError, "weight expects a Node, but received #{node.inspect}" unless node.is_a?(Nokogiri::XML::Node)
 
-      calculated_weight = \
-        if node.text? || node.cdata? || node.comment?
-          1 + Math.log(node.content.length)
-        elsif node.type == Nokogiri::XML::Node::ENTITY_REF_NODE
-          1
-        elsif node.element?
-          node.children.inject(1) { |sum, child| sum += weight(child) }
-        else
-          raise ArgumentError, "weight expects an element, text, cdata or comment node, but received #{node.class}"
+      if node.text?
+        content = node.content.strip
+        if content.empty?
+          calculated_weight = 0
+        else          
+          calculated_weight = 1 + Math.log(content.length)
         end
+      elsif node.cdata? || node.comment?
+        calculated_weight = 1 + Math.log(node.content.length)
+      elsif node.type == Nokogiri::XML::Node::ENTITY_REF_NODE
+        calculated_weight = 1
+      elsif node.element?
+        calculated_weight = node.children.inject(1) { |sum, child| sum += weight(child) }
+      else
+        raise ArgumentError, "weight expects an element, text, cdata or comment node, but received #{node.class}"
+      end
 
       @weights[node] = calculated_weight
     end

@@ -1,6 +1,8 @@
 require File.expand_path(File.dirname(__FILE__) + '/../spec_helper')
 
 describe Lorax::Signature do
+  WHITESPACES = ["\n"," ","\t","\r","\f"]
+
   def assert_node_signature_equal(node1, node2)
     Lorax::Signature.new(node1).signature.should == Lorax::Signature.new(node2).signature
   end
@@ -45,6 +47,18 @@ describe Lorax::Signature do
       doc_sig  = Lorax::Signature.new(doc.root)
       node_sig = Lorax::Signature.new(nodes.first)
       doc_sig.nodes(node_sig.signature).should =~ nodes.to_a
+    end
+
+    it "returns the node if I pass nil" do
+      doc = xml { root {
+          a1 "hello1"
+          a1 "hello2"
+          a1 "hello3"
+        } }
+      nodes    = doc.css("a1")
+      doc_sig  = Lorax::Signature.new(doc.root)
+      node_sig = Lorax::Signature.new(nodes.first)
+      doc_sig.nodes(nil).should == [doc.root]
     end
   end
 
@@ -166,23 +180,45 @@ describe Lorax::Signature do
       sig.signature(node)
     end
 
-    context "identical text nodes" do
-      it "have equal signatures" do
+    context "passed a text Node" do
+      it "returns equal signatures for identical text nodes" do
         doc = xml { root {
             span "hello"
             span "hello"
           } }
         assert_node_signature_equal(*doc.css("span").collect { |n| n.children.first })
       end
-    end
 
-    context "different text nodes" do
-      it "have inequal signatures" do
+      it "returns inequal signatures for different text nodes" do
         doc = xml { root {
             span "hello"
             span "goodbye"
           } }
         assert_node_signature_not_equal(*doc.css("span").collect { |n| n.children.first })
+      end
+
+      it "ignores leading whitespace" do
+        doc = xml { root {
+            span "hello"
+            span "#{WHITESPACES.join}hello"
+          } }
+        assert_node_signature_equal(*doc.css("span").collect { |n| n.children.first })
+      end
+
+      it "ignores trailing whitespace" do
+        doc = xml { root {
+            span "hello"
+            span "hello#{WHITESPACES.join}"
+          } }
+        assert_node_signature_equal(*doc.css("span").collect { |n| n.children.first })
+      end
+
+      it "treats empty text nodes the same as no text node" do
+        doc = xml { root {
+            span WHITESPACES.join
+            span
+          } }
+        assert_node_signature_equal(*doc.css("span"))
       end
     end
 
