@@ -1,5 +1,10 @@
 = Changelog
 
+== 0.2.0 (2010-10-14)
+
+* Better handling of whitespace: blank text nodes are ignored, as is
+  leading and trailing whitespace in text nodes. GH#2.
+
 == 0.1.0 (2010-03-09)
 
 * Happy Birthday!
