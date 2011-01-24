@@ -18,5 +18,15 @@ module Lorax
     def descriptor
       [:insert, {:xpath => xpath, :position => position, :content => node.to_s}]
     end
+
+    def to_s
+      response = []
+      response << "---"
+      response << "+++ #{node.path}"
+      response << context_before(node)
+      response << node.to_html.gsub(/^/,'+ ').strip
+      response << context_after(node)
+      response.join("\n")
+    end
   end
 end

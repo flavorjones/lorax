@@ -20,6 +20,22 @@ module Lorax
         children[position].add_previous_sibling(node.dup)
       end
     end
+
+    def context_before node
+      if node.previous_sibling
+        node.previous_sibling.to_xml.gsub(/^/,'  ').rstrip
+      else
+        "  <#{node.parent.name}>"
+      end
+    end
+
+    def context_after node
+      if node.next_sibling
+        node.next_sibling.to_xml.gsub(/^/,'  ').rstrip
+      else
+        "  </#{node.parent.name}>"
+      end
+    end
   end
 end
 

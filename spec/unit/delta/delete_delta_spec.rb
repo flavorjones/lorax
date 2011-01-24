@@ -47,4 +47,8 @@ describe Lorax::DeleteDelta do
   describe "#descriptor" do
     it "needs a spec"
   end
+
+  describe "#to_s" do
+    it "needs a spec"
+  end
 end

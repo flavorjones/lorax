@@ -20,5 +20,11 @@ module Lorax
       end
       document
     end
+
+    def to_s
+      deltas.collect do |delta|
+        delta.to_s
+      end.join("\n\n")
+    end
   end
 end
