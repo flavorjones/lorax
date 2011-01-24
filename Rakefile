@@ -14,8 +14,8 @@ Hoe.spec 'lorax' do
   self.history_file     = "CHANGELOG.rdoc"
   self.readme_file      = "README.rdoc"
 
-  extra_deps << ["nokogiri", ">= 1.4.0"]
-  extra_dev_deps << ["rspec", ">= 1.2.9"]
+  extra_deps << ["nokogiri", "~> 1.4"]
+  extra_dev_deps << ["rspec", "~> 1.2"]
   extra_dev_deps << ["rr", ">= 0.10.4"]
 end
 
