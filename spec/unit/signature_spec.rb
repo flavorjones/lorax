@@ -441,9 +441,9 @@ describe Lorax::Signature do
             a3("x" * 50_000)
           } }
         sig = Lorax::Signature.new(doc.root)
-        sig.weight(doc.at_css("a1")).should be_close(2, 0.0005)
-        sig.weight(doc.at_css("a2")).should be_close(2 + Math.log(500), 0.0005)
-        sig.weight(doc.at_css("a3")).should be_close(2 + Math.log(50_000), 0.0005)
+        sig.weight(doc.at_css("a1")).should be_within(0.0005).of(2)
+        sig.weight(doc.at_css("a2")).should be_within(0.0005).of(2 + Math.log(500))
+        sig.weight(doc.at_css("a3")).should be_within(0.0005).of(2 + Math.log(50_000))
       end
     end
   end

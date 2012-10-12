@@ -1,22 +1,23 @@
-# -*- ruby -*-
-
-require 'rubygems'
-gem 'hoe', '>= 2.5.0'
-require 'hoe'
+require "rubygems"
+require "hoe"
 
 Hoe.plugin :git
 Hoe.plugin :gemspec
+Hoe.plugin :bundler
 
-Hoe.spec 'lorax' do
+Hoe.spec "lorax" do
   developer "Mike Dalessio", "mike.dalessio@gmail.com"
 
   self.extra_rdoc_files = FileList["*.rdoc"]
   self.history_file     = "CHANGELOG.rdoc"
   self.readme_file      = "README.rdoc"
 
-  extra_deps << ["nokogiri", "~> 1.4"]
-  extra_dev_deps << ["rspec", "~> 1.2"]
-  extra_dev_deps << ["rr", ">= 0.10.4"]
+  extra_deps     << ["nokogiri",    ">= 1.4"]
+  extra_dev_deps << ["rspec",       "~> 2.11"]
+  extra_dev_deps << ["rr",          ">= 1.0"]
+  extra_dev_deps << ["hoe-git",     "> 0"]
+  extra_dev_deps << ["hoe-gemspec", "> 0"]
+  extra_dev_deps << ["hoe-bundler", "> 0"]
 end
 
 task :redocs => :fix_css
