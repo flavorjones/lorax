@@ -1,7 +1,7 @@
 require 'nokogiri'
 
 module Lorax
-  VERSION = "0.2.0"
+  VERSION = "0.3.0.rc1"
   REQUIRED_NOKOGIRI_VERSION = "1.4.0"
   raise LoadError, "lorax requires Nokogiri version #{REQUIRED_NOKOGIRI_VERSION} or higher" unless Nokogiri::VERSION >= REQUIRED_NOKOGIRI_VERSION
 end

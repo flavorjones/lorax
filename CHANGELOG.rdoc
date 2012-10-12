@@ -1,5 +1,9 @@
 = Changelog
 
+== 0.3.0 (unreleased)
+
+* Human-readable diffs.
+
 == 0.2.0 (2010-10-14)
 
 * Better handling of whitespace: blank text nodes are ignored, as is
