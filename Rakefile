@@ -11,6 +11,7 @@ Hoe.spec "lorax" do
   self.extra_rdoc_files = FileList["*.rdoc"]
   self.history_file     = "CHANGELOG.rdoc"
   self.readme_file      = "README.rdoc"
+  self.licenses = ["MIT"]
 
   extra_deps     << ["nokogiri",    ">= 1.4"]
   extra_dev_deps << ["rspec",       "~> 2.11"]
