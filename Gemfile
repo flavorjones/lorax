@@ -6,12 +6,12 @@ source "https://rubygems.org/"
 
 gem "nokogiri", ">=1.4"
 
-gem "rdoc", "~>3.10", :group => [:development, :test]
 gem "rspec", "~>2.11", :group => [:development, :test]
 gem "rr", ">=1.0", :group => [:development, :test]
 gem "hoe-git", ">0", :group => [:development, :test]
 gem "hoe-gemspec", ">0", :group => [:development, :test]
 gem "hoe-bundler", ">0", :group => [:development, :test]
-gem "hoe", "~>3.1", :group => [:development, :test]
+gem "rdoc", ">=4.0", "<7", :group => [:development, :test]
+gem "hoe", "~>3.23", :group => [:development, :test]
 
 # vim: syntax=ruby

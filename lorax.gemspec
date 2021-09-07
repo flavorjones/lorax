@@ -1,14 +1,15 @@
 # -*- encoding: utf-8 -*-
-# stub: lorax 0.3.0.rc2.20190318145113 ruby lib
+# stub: lorax 0.3.0.rc2.20210907092457 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "lorax".freeze
-  s.version = "0.3.0.rc2.20190318145113"
+  s.version = "0.3.0.rc2.20210907092457"
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1".freeze) if s.respond_to? :required_rubygems_version=
+  s.metadata = { "homepage_uri" => "http://github.com/flavorjones/lorax" } if s.respond_to? :metadata=
   s.require_paths = ["lib".freeze]
   s.authors = ["Mike Dalessio".freeze]
-  s.date = "2019-03-18"
+  s.date = "2021-09-07"
   s.description = "The Lorax is a full diff and patch library for XML/HTML documents, based on Nokogiri.\n\nIt can tell you whether two XML/HTML documents are identical, or if\nthey're not, tell you what's different. In trivial cases, it can even\napply the patch.\n\nIt's based loosely on Gregory Cobena's master's thesis paper, which\ngenerates deltas in less than O(n * log n) time, accepting some\ntradeoffs in the size of the delta set. You can find his paper at\nhttp://gregory.cobena.free.fr/www/Publications/thesis.html.\n\n\"I am the Lorax, I speak for the trees.\"".freeze
   s.email = ["mike.dalessio@gmail.com".freeze]
   s.executables = ["lorax".freeze]
@@ -17,31 +18,22 @@ Gem::Specification.new do |s|
   s.homepage = "http://github.com/flavorjones/lorax".freeze
   s.licenses = ["MIT".freeze]
   s.rdoc_options = ["--main".freeze, "README.rdoc".freeze]
-  s.rubygems_version = "3.0.3".freeze
+  s.rubygems_version = "3.2.15".freeze
   s.summary = "The Lorax is a full diff and patch library for XML/HTML documents, based on Nokogiri".freeze
 
   if s.respond_to? :specification_version then
     s.specification_version = 4
+  end
 
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<nokogiri>.freeze, [">= 1.4"])
-      s.add_development_dependency(%q<rspec>.freeze, ["~> 2.11"])
-      s.add_development_dependency(%q<rr>.freeze, [">= 1.0"])
-      s.add_development_dependency(%q<hoe-git>.freeze, ["> 0"])
-      s.add_development_dependency(%q<hoe-gemspec>.freeze, ["> 0"])
-      s.add_development_dependency(%q<hoe-bundler>.freeze, ["> 0"])
-      s.add_development_dependency(%q<rdoc>.freeze, [">= 4.0", "< 7"])
-      s.add_development_dependency(%q<hoe>.freeze, ["~> 3.17"])
-    else
-      s.add_dependency(%q<nokogiri>.freeze, [">= 1.4"])
-      s.add_dependency(%q<rspec>.freeze, ["~> 2.11"])
-      s.add_dependency(%q<rr>.freeze, [">= 1.0"])
-      s.add_dependency(%q<hoe-git>.freeze, ["> 0"])
-      s.add_dependency(%q<hoe-gemspec>.freeze, ["> 0"])
-      s.add_dependency(%q<hoe-bundler>.freeze, ["> 0"])
-      s.add_dependency(%q<rdoc>.freeze, [">= 4.0", "< 7"])
-      s.add_dependency(%q<hoe>.freeze, ["~> 3.17"])
-    end
+  if s.respond_to? :add_runtime_dependency then
+    s.add_runtime_dependency(%q<nokogiri>.freeze, [">= 1.4"])
+    s.add_development_dependency(%q<rspec>.freeze, ["~> 2.11"])
+    s.add_development_dependency(%q<rr>.freeze, [">= 1.0"])
+    s.add_development_dependency(%q<hoe-git>.freeze, ["> 0"])
+    s.add_development_dependency(%q<hoe-gemspec>.freeze, ["> 0"])
+    s.add_development_dependency(%q<hoe-bundler>.freeze, ["> 0"])
+    s.add_development_dependency(%q<rdoc>.freeze, [">= 4.0", "< 7"])
+    s.add_development_dependency(%q<hoe>.freeze, ["~> 3.23"])
   else
     s.add_dependency(%q<nokogiri>.freeze, [">= 1.4"])
     s.add_dependency(%q<rspec>.freeze, ["~> 2.11"])
@@ -50,6 +42,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<hoe-gemspec>.freeze, ["> 0"])
     s.add_dependency(%q<hoe-bundler>.freeze, ["> 0"])
     s.add_dependency(%q<rdoc>.freeze, [">= 4.0", "< 7"])
-    s.add_dependency(%q<hoe>.freeze, ["~> 3.17"])
+    s.add_dependency(%q<hoe>.freeze, ["~> 3.23"])
   end
 end
